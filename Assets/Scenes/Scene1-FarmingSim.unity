@@ -1238,6 +1238,7 @@ MonoBehaviour:
   waterLevelUI: {fileID: 1998925136}
   waterLevel: 1
   waterPerUse: 0.1
+  fundsText: {fileID: 1453413617}
 --- !u!1 &111998804
 GameObject:
   m_ObjectHideFlags: 0

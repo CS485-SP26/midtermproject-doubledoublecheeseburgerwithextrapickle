@@ -1,5 +1,7 @@
 using Character;
+using Core;
 using Farming;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,6 +17,7 @@ namespace Farming
         [SerializeField] private float waterLevel = 1f;
         [SerializeField] private float waterPerUse = 0.1f;
         AnimatedController animatedController;
+        [SerializeField] private TMP_Text fundsText;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
@@ -25,6 +28,8 @@ namespace Farming
             SetTool("None");
             animatedController = GetComponent<AnimatedController>();
             waterLevelUI.SetFill(waterLevel);
+
+            fundsText.text = "Funds: $" + GameManager.Instance.getFunds();
         }
         public void TryTileInteraction(FarmTile tile)
         {
