@@ -8,6 +8,7 @@ namespace Core
         public static GameManager Instance;
 
         int funds = 0;
+        int seeds = 0;
         float waterLevel = 1f; // will be overridden at game start
 
         private void Awake()
@@ -26,6 +27,21 @@ namespace Core
         public void AddFunds(int amount)
         {
             funds += amount;
+        }
+
+        public void SubtractFunds(int amount)
+        {
+            funds -= amount;
+        }
+        
+        public void AddSeeds(int amount)
+        {
+            seeds += amount;
+        }
+        
+        public int GetSeeds()
+        {
+            return seeds;
         }
 
         public int GetFunds()
