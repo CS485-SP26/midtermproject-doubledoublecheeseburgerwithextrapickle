@@ -15,8 +15,9 @@ namespace Farming
         [SerializeField] private ProgressBar waterLevelUI;
         [SerializeField] private float waterPerUse = 0.1f;
         [SerializeField] private TMP_Text fundsText;
+        [SerializeField] private GameObject WinText;
         
-        [SerializeField] private TMP_Text seedsText;        
+        //[SerializeField] private TMP_Text seedsText;        
         private bool hasAwardedCompletion = false;
         private bool buyButtonClicked = false; // TODO: Connect this to UI button (I believe)
 
@@ -35,13 +36,14 @@ namespace Farming
             float water = GameManager.Instance.GetWaterLevel();
             waterLevelUI.SetFill(water);
 
-            fundsText.text = "Funds: $" + GameManager.Instance.GetFunds();
-            seedsText.text = "Seeds: " + GameManager.Instance.GetSeeds();
+            WinText.SetActive(false);
+
+
         }
         
         void Update()
         {
-            CheckAllTilesWatered(); // TODO: Double check if this is correct placement
+            winConditionMet(); 
         }
         
         public void TryTileInteraction(FarmTile tile)
@@ -83,23 +85,35 @@ namespace Farming
                     break;
             }
         }
-        public void CheckAllTilesWatered()
+        //public void CheckAllTilesWatered()
+        //{
+        //        if (hasAwardedCompletion) return;
+                
+        //        FarmTile[] allTiles = FindObjectsOfType<FarmTile>();
+        //        foreach (FarmTile tile in allTiles)
+        //        {
+        //            if (tile.GetCondition != FarmTile.Condition.Watered)
+        //            {
+        //                return; // If any tile is not watered
+        //            }
+        //        }
+                
+        //        hasAwardedCompletion = true;
+        //        GameManager.Instance.AddFunds(30); // Add funds for watering all tiles
+        //        fundsText.text = "Congratulations! You earned money money money!!!\nFunds: $" + GameManager.Instance.GetFunds();
+                
+        //}
+
+        public void winConditionMet()
         {
-                if (hasAwardedCompletion) return;
-                
-                FarmTile[] allTiles = FindObjectsOfType<FarmTile>();
-                foreach (FarmTile tile in allTiles)
-                {
-                    if (tile.GetCondition != FarmTile.Condition.Watered)
-                    {
-                        return; // If any tile is not watered
-                    }
-                }
-                
+            if(hasAwardedCompletion) return;
+
+            if(GameManager.Instance.GetSeeds() >= 5)
+            {
                 hasAwardedCompletion = true;
                 GameManager.Instance.AddFunds(30); // Add funds for watering all tiles
-                fundsText.text = "Congratulations! You earned money money money!!!\nFunds: $" + GameManager.Instance.GetFunds();
-                
+                WinText.SetActive(true);
+            }
         }
 
         public void OnBuyButtonClicked()
@@ -107,17 +121,17 @@ namespace Farming
             buyButtonClicked = true;
         }
 
-        public void buySeeds()
-        {
-            if (GameManager.Instance.GetFunds() >= 10 && buyButtonClicked)
-            {
-                GameManager.Instance.SubtractFunds(10);
-                GameManager.Instance.AddSeeds(1);
-                fundsText.text = "Item bought!\nFunds: $" + GameManager.Instance.GetFunds();
-                seedsText.text = "Seeds: " + GameManager.Instance.GetSeeds();
-                buyButtonClicked = false; 
-            }
-        }
+        //public void buySeeds()
+        //{
+        //    if (GameManager.Instance.GetFunds() >= 10 && buyButtonClicked)
+        //    {
+        //        GameManager.Instance.SubtractFunds(10);
+        //        GameManager.Instance.AddSeeds(1);
+        //        fundsText.text = "Item bought!\nFunds: $" + GameManager.Instance.GetFunds();
+        //        seedsText.text = "Seeds: " + GameManager.Instance.GetSeeds();
+        //        buyButtonClicked = false; 
+        //    }
+        //}
         
         public void SetTool(string tool)
         {
