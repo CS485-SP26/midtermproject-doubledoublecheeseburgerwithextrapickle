@@ -3,55 +3,49 @@ using UnityEngine.SceneManagement;
 
 namespace Core
 {
-    public class GameManager:MonoBehaviour
+    public class GameManager : MonoBehaviour
     {
-        private static GameManager instance = null;
+        public static GameManager Instance;
+
         int funds = 0;
-        
+        float waterLevel = 1f; // will be overridden at game start
 
-        static public GameManager Instance
+        private void Awake()
         {
-            get
+            if (Instance == null)
             {
-                if(instance == null)
-                {
-                    GameObject go = new GameObject("GameManager");
-                    instance = go.AddComponent<GameManager>();
-                    DontDestroyOnLoad(go);
-                    Debug.Log("GameManager instance created");
-                }
-                return instance;
-            }
-        }
-
-        public void Awake()
-        {
-            if(instance == null)
-            {
-                instance = this;
+                Instance = this;
                 DontDestroyOnLoad(this);
-                Debug.Log("GameManager instance assigned in Awake");
             }
-            else if(instance != this)
+            else if (Instance != this)
             {
-                Destroy(this);
-                Debug.LogWarning("Duplicate GameManager instance destroyed");
+                Destroy(gameObject);
             }
         }
 
-        public void AddFunds(int funds)
+        public void AddFunds(int amount)
         {
-            this.funds = funds;
+            funds += amount;
+        }
+
+        public int GetFunds()
+        {
+            return funds;
+        }
+
+        public void SetWaterLevel(float value)
+        {
+            waterLevel = value;
+        }
+
+        public float GetWaterLevel()
+        {
+            return waterLevel;
         }
 
         public void LoadScenebyName(string name)
         {
             SceneManager.LoadScene(name);
-        }
-
-        public int getFunds()
-        {
-            return this.funds;
         }
     }
 }

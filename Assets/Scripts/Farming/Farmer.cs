@@ -1,4 +1,4 @@
-using Character;
+﻿using Character;
 using Core;
 using Farming;
 using TMPro;
@@ -10,49 +10,67 @@ namespace Farming
     [RequireComponent(typeof(AnimatedController))]
     public class Farmer : MonoBehaviour
     {
-
         [SerializeField] private GameObject waterCan;
         [SerializeField] private GameObject hoe;
         [SerializeField] private ProgressBar waterLevelUI;
-        [SerializeField] private float waterLevel = 1f;
         [SerializeField] private float waterPerUse = 0.1f;
-        AnimatedController animatedController;
         [SerializeField] private TMP_Text fundsText;
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+        private AnimatedController animatedController;
+
         void Start()
         {
             Debug.Assert(waterCan != null, "Water Can is not assigned in the inspector.");
             Debug.Assert(hoe != null, "Hoe is not assigned in the inspector.");
             Debug.Assert(waterLevelUI != null, "Water Level is not assigned in the inspector.");
-           
+
             SetTool("None");
             animatedController = GetComponent<AnimatedController>();
-            waterLevelUI.SetFill(waterLevel);
 
-            fundsText.text = "Funds: $" + GameManager.Instance.getFunds();
+            // 🔹 Read from GameManager, not a local serialized value
+            float water = GameManager.Instance.GetWaterLevel();
+            waterLevelUI.SetFill(water);
+
+            fundsText.text = "Funds: $" + GameManager.Instance.GetFunds();
         }
+
         public void TryTileInteraction(FarmTile tile)
         {
-
             if (tile == null) return;
-                
+
             switch (tile.GetCondition)
             {
-                case FarmTile.Condition.Grass: 
+                case FarmTile.Condition.Grass:
                     tile.Interact();
-                    animatedController.SetTrigger("Till"); 
+                    animatedController.SetTrigger("Till");
                     break;
-                case FarmTile.Condition.Tilled: 
-                    if(waterLevel > waterPerUse)
+
+                case FarmTile.Condition.Tilled:
                     {
+                        float before = GameManager.Instance.GetWaterLevel();
+
+                        // 🔹 Don’t water if empty
+                        if (before <= 0f || before < waterPerUse)
+                        {
+                            Debug.Log("[Farmer] Tried to water but water is empty.");
+                            return;
+                        }
+
+                        float after = Mathf.Clamp01(before - waterPerUse);
+                        GameManager.Instance.SetWaterLevel(after);
+
+                        Debug.Log($"[Farmer] Water used. Before={before}, After={after}");
+
                         tile.Interact();
                         animatedController.SetTrigger("Water");
-                        waterLevel -= waterPerUse;
-                        waterLevelUI.SetFill(waterLevel);
+
+                        // 🔹 Drive UI from GameManager value
+                        waterLevelUI.SetFill(after);
                     }
-                        
                     break;
-                default: break;
+
+                default:
+                    break;
             }
         }
 
@@ -63,15 +81,12 @@ namespace Farming
 
             switch (tool)
             {
-
                 case "Watering Can":
                     waterCan.SetActive(true);
                     break;
-
                 case "Hoe":
                     hoe.SetActive(true);
                     break;
-
                 case "None":
                     waterCan.SetActive(false);
                     hoe.SetActive(false);
@@ -79,5 +94,4 @@ namespace Farming
             }
         }
     }
-
 }
