@@ -6,6 +6,7 @@ namespace Core
 {
     public class GameManager : MonoBehaviour
     {
+        // wa wa wa
         public static GameManager Instance { get; private set; }
 
         int funds = 0;
