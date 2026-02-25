@@ -11,6 +11,7 @@ namespace Core
         int funds = 0;
         int seeds = 0;
         float waterLevel = 1f;
+        public bool hasAwardedCompletion = false;
 
         private void Awake()
         {
@@ -72,6 +73,9 @@ namespace Core
             return funds >= amount;
         }
 
-        
+        public void setWinCondition()
+        {
+            hasAwardedCompletion = true;
+        }
     }
 }

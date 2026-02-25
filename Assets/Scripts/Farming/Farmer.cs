@@ -18,7 +18,7 @@ namespace Farming
         [SerializeField] private GameObject WinText;
         
         //[SerializeField] private TMP_Text seedsText;        
-        private bool hasAwardedCompletion = false;
+        //private bool hasAwardedCompletion = false;
         private bool buyButtonClicked = false; // TODO: Connect this to UI button (I believe)
 
         private AnimatedController animatedController;
@@ -106,16 +106,20 @@ namespace Farming
 
         public void winConditionMet()
         {
-            if(hasAwardedCompletion) return;
+            if(GameManager.Instance.hasAwardedCompletion) return;
 
             if(GameManager.Instance.GetSeeds() >= 5)
             {
-                hasAwardedCompletion = true;
-                GameManager.Instance.AddFunds(30); // Add funds for watering all tiles
+                GameManager.Instance.setWinCondition();
+                GameManager.Instance.AddFunds(30);
                 WinText.SetActive(true);
             }
         }
 
+        public void clearWin()
+        {
+            WinText.SetActive(false);
+        }
         public void OnBuyButtonClicked()
         {
             buyButtonClicked = true;
