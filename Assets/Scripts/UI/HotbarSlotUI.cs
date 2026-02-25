@@ -8,6 +8,7 @@ public class HotbarSlotUI : MonoBehaviour
     public TextMeshProUGUI countText;
     public Image border;
     public InventoryController inventoryController;
+    public bool IsSelected;
 
     public void SetItem(Item item)
     {
@@ -30,10 +31,21 @@ public class HotbarSlotUI : MonoBehaviour
     public void SetSelected()
     {
         Debug.Log("Selected");
-        SetColor(Color.yellow);
         inventoryController.SelectSlot(this);
-
     }
+
+    public void Select()
+    {
+        SetColor(Color.yellow);
+        IsSelected = true;
+    }
+
+    public void Deselect()
+    {
+        SetColor(Color.white);
+        IsSelected = false;
+    }
+
     public void SetColor(Color newColor)
     {
         Debug.Log("Color changed");

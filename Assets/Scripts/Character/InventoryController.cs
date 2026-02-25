@@ -33,11 +33,19 @@ public class InventoryController : MonoBehaviour
         for (int i = 0; i < slots.Length; i++)
         {
             HotbarSlotUI slot = slots[i];
-            slot.SetColor(Color.white);
+            slot.Deselect();
         }
-        selectedSlot.SetColor(Color.yellow);
+        selectedSlot.Select();
     }
 
-
+    public Item GetSelectedItem()
+    {
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i].IsSelected)
+                return inventoryItems[i];
+        }
+        return null;
+    }
 
 }

@@ -16,12 +16,14 @@ namespace Character
         Farmer farmer;
         [SerializeField] private TileSelector tileSelector;
         AnimatedController animatedController;
+        InventoryController inventoryController;
 
         void Start()
         {
             moveController = GetComponent<MovementController>();
             farmer = GetComponent<Farmer>();
             animatedController = GetComponent<AnimatedController>();
+            inventoryController = GetComponent<InventoryController>();
             ////SetTool("None");
 
             //// TODO: Consider Debug.Assert vs RequireComponent(typeof(...))
