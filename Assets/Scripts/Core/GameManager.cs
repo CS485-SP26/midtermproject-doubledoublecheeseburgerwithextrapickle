@@ -6,13 +6,12 @@ namespace Core
 {
     public class GameManager : MonoBehaviour
     {
-        // wa wa wa
         public static GameManager Instance { get; private set; }
 
         int funds = 0;
         int seeds = 0;
         float waterLevel = 1f;
-
+        float energyLevel = 100f;
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -42,7 +41,11 @@ namespace Core
         {
             seeds += amount;
         }
-        
+        public void SubtractSeeds(int amount)
+        {
+        seeds -= amount;
+        if (seeds < 0) seeds = 0;
+        }
         public int GetSeeds()
         {
             return seeds;
@@ -63,6 +66,15 @@ namespace Core
             return waterLevel;
         }
 
+        public void SetEnergyLevel(float value)
+        {
+            energyLevel = value;
+        }
+
+        public float GetEnergyLevel()
+        {
+            return energyLevel;
+        }
         public void LoadScenebyName(string name)
         {
             SceneManager.LoadScene(name);

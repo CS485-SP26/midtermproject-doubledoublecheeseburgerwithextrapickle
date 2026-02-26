@@ -14,6 +14,8 @@ namespace Farming
         [SerializeField] private GameObject hoe;
         [SerializeField] private ProgressBar waterLevelUI;
         [SerializeField] private float waterPerUse = 0.1f;
+        [SerializeField] private ProgressBar energyLevelUI;
+        [SerializeField] private float energyPerUse = 15f;
         [SerializeField] private TMP_Text fundsText;
         [SerializeField] private GameObject WinText;
         
@@ -24,23 +26,36 @@ namespace Farming
         private AnimatedController animatedController;
 
         void Start()
-        {
-            Debug.Assert(waterCan != null, "Water Can is not assigned in the inspector.");
-            Debug.Assert(hoe != null, "Hoe is not assigned in the inspector.");
-            Debug.Assert(waterLevelUI != null, "Water Level is not assigned in the inspector.");
+{
+    Debug.Assert(waterCan != null, "Water Can is not assigned in the inspector.");
+    Debug.Assert(hoe != null, "Hoe is not assigned in the inspector.");
+    Debug.Assert(waterLevelUI != null, "Water Level is not assigned in the inspector.");
+    Debug.Assert(energyLevelUI != null, "Energy Level is not assigned in the inspector.");
 
-            SetTool("None");
-            animatedController = GetComponent<AnimatedController>();
+    SetTool("None");
+    animatedController = GetComponent<AnimatedController>();
 
-            // 🔹 Read from GameManager, not a local serialized value
-            float water = GameManager.Instance.GetWaterLevel();
-            waterLevelUI.SetFill(water);
+   
+    if (GameManager.Instance == null)
+    {
+        Debug.LogWarning("[Farmer] GameManager.Instance is null in this scene. Farmer will not initialize UI values.");
+        return;
+    }
 
-            WinText.SetActive(false);
 
+    float water = GameManager.Instance.GetWaterLevel();   // 0..1
+    waterLevelUI.SetFill(Mathf.Clamp01(water));
 
-        }
-        
+    float energy = GameManager.Instance.GetEnergyLevel(); // 0..100
+    energyLevelUI.SetFill(Mathf.Clamp01(energy / 100f));
+
+   
+    if (WinText != null)
+        WinText.SetActive(false);
+    else
+        Debug.LogWarning("[Farmer] WinText is not assigned in the inspector.");
+}
+
         void Update()
         {
             winConditionMet(); 
@@ -53,15 +68,33 @@ namespace Farming
             switch (tile.GetCondition)
             {
                 case FarmTile.Condition.Grass:
-                    tile.Interact();
-                    animatedController.SetTrigger("Till");
-                    break;
+                    {
+                        float before = GameManager.Instance.GetEnergyLevel(); // 0..100
 
+                        // Don't till if no energy
+                        if (before < energyPerUse)
+                        {
+                            Debug.Log("[Farmer] Tried to perform but no energy left in the tank.");
+                            return;
+                        }
+
+                        float after = Mathf.Clamp(before - energyPerUse, 0f, 100f);
+                        GameManager.Instance.SetEnergyLevel(after);
+
+                        Debug.Log($"[Farmer] Energy used. Before={before}, After={after}");
+
+                        tile.Interact();
+                        animatedController.SetTrigger("Till");
+
+                        // ProgressBar expects 0..1
+                        energyLevelUI.SetFill(after / 100f);
+                    }
+                    break;
                 case FarmTile.Condition.Tilled:
                     {
                         float before = GameManager.Instance.GetWaterLevel();
 
-                        // 🔹 Don’t water if empty
+                        // 🔹 Don’t water if no water
                         if (before <= 0f || before < waterPerUse)
                         {
                             Debug.Log("[Farmer] Tried to water but water is empty.");
@@ -80,7 +113,34 @@ namespace Farming
                         waterLevelUI.SetFill(after);
                     }
                     break;
+                case FarmTile.Condition.Watered:
+                {
+                    int seedsBefore = GameManager.Instance.GetSeeds();
 
+                    if (seedsBefore < 1)
+                    {
+                        Debug.Log("[Farmer] Tried to plant seeds but have no seeds.");
+                        return;
+                    }
+
+                    // Try to plant first 
+                    bool planted = tile.PlantSeed();
+
+                    if (!planted)
+                    {
+                        Debug.Log("[Farmer] PlantSeed failed.");
+                        return;
+                    }
+
+                    GameManager.Instance.SubtractSeeds(1);
+
+                    Debug.Log($"[Farmer] Seed used. Before={seedsBefore}, After={GameManager.Instance.GetSeeds()}");
+
+                    
+
+                    break;
+                }
+                    
                 default:
                     break;
             }
@@ -106,13 +166,20 @@ namespace Farming
 
         public void winConditionMet()
         {
-            if(hasAwardedCompletion) return;
+            if (hasAwardedCompletion) return;
 
-            if(GameManager.Instance.GetSeeds() >= 5)
+            if (GameManager.Instance == null)
+                return; // GameManager not ready in this scene
+
+            if (GameManager.Instance.GetSeeds() >= 5)
             {
                 hasAwardedCompletion = true;
-                GameManager.Instance.AddFunds(30); // Add funds for watering all tiles
-                WinText.SetActive(true);
+                GameManager.Instance.AddFunds(30);
+
+                if (WinText != null)
+                    WinText.SetActive(true);
+                else
+                    Debug.LogWarning("[Farmer] WinText is not assigned in the inspector.");
             }
         }
 
