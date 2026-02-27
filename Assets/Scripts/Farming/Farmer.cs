@@ -140,6 +140,24 @@ namespace Farming
 
                     break;
                 }
+                case FarmTile.Condition.Withered:
+                    {
+                        // Don't till if no energy
+                        if (!hasEnergy()){ return; }
+
+                        float beforeEnergy = GameManager.Instance.GetEnergyLevel(); // 0..100
+                        float afterEnergy = Mathf.Clamp(beforeEnergy - energyPerUse, 0f, 100f);
+                        GameManager.Instance.SetEnergyLevel(afterEnergy);
+
+                        Debug.Log($"[Farmer] Energy used. Before={beforeEnergy}, After={afterEnergy}");
+
+                        tile.Interact();
+                        animatedController.SetTrigger("Till");
+
+                        // ProgressBar expects 0..1
+                        energyLevelUI.SetFill(afterEnergy / 100f);
+                    }
+                    break;
                     
                 default:
                     break;
@@ -186,6 +204,28 @@ namespace Farming
         public void OnBuyButtonClicked()
         {
             buyButtonClicked = true;
+        }
+
+        public bool hasWater()
+        {
+            float beforeWater = GameManager.Instance.GetWaterLevel();
+            if (beforeWater <= 0f || beforeWater < waterPerUse)
+            {
+                Debug.Log("[Farmer] Tried to water but water is empty.");
+                return false;
+            }
+            return true;
+        }
+        public bool hasEnergy()
+        {
+            float beforeEnergy = GameManager.Instance.GetEnergyLevel(); // 0..100
+            // Don't till if no energy
+            if (beforeEnergy < energyPerUse)
+            {
+                Debug.Log("[Farmer] Tried to perform but no energy left in the tank.");
+                return false;
+            }
+            return true;
         }
 
         //public void buySeeds()

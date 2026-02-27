@@ -7,7 +7,7 @@ namespace Farming
 {
     public class FarmTile : MonoBehaviour
     {
-        public enum Condition { Grass, Tilled, Watered, Planted, Grown }
+        public enum Condition { Grass, Tilled, Watered, Planted, Grown, Withered }
 
         [SerializeField] private Condition tileCondition = Condition.Grass; 
 
@@ -64,6 +64,8 @@ namespace Farming
                 case FarmTile.Condition.Watered: Debug.Log("Ready for planting"); break;
                 case FarmTile.Condition.Planted: Debug.Log("Growing..."); break;
                 case FarmTile.Condition.Grown: Debug.Log("Fully grown!"); break;
+                case FarmTile.Condition.Withered: Till(); break; // Hoping this works, and allows player to till and water normally again. if not im sorry.
+
             }
             daysSinceLastInteraction = 0;
         }
@@ -119,6 +121,12 @@ namespace Farming
             }
 
             return true;
+        }
+
+        // NEW: optional helper if you want Farmer to check whether it's fully grown
+        public bool IsFullyGrown()
+        {
+            return tileCondition == Condition.Grown || (growTime != null && growTime.IsGrown);
         }
 
         // NEW: spawns TomatoStates prefab under this tile so each tile grows independently
@@ -178,12 +186,6 @@ namespace Farming
                 growTime.gameObject.SetActive(true);
         }
 
-        // NEW: optional helper if you want Farmer to check whether it's fully grown
-        public bool IsFullyGrown()
-        {
-            return tileCondition == Condition.Grown || (growTime != null && growTime.IsGrown);
-        }
-
         private void Update()
         {
             // NEW: keep tile condition synced once growth finishes
@@ -206,6 +208,7 @@ namespace Farming
                 // NEW: keep ground looking watered while planted/grown (you can swap materials later if you want)
                 case FarmTile.Condition.Planted: tileRenderer.material = wateredMaterial; break;
                 case FarmTile.Condition.Grown: tileRenderer.material = wateredMaterial; break;
+                case FarmTile.Condition.Withered: tileRenderer.material = tilledMaterial; break; // TODO: Might want to change to a withered material of the sorts
             }
         }
 
@@ -230,12 +233,13 @@ namespace Farming
             daysSinceLastInteraction++;
 
             // NEW: don't decay while planted/grown
-            if (tileCondition == Condition.Planted || tileCondition == Condition.Grown) return;
+            // if (tileCondition == Condition.Planted || tileCondition == Condition.Grown) return;
 
             if(daysSinceLastInteraction >= 2)
             {
                 if(tileCondition == FarmTile.Condition.Watered) tileCondition = FarmTile.Condition.Tilled;
                 else if(tileCondition == FarmTile.Condition.Tilled) tileCondition = FarmTile.Condition.Grass;
+                else if(tileCondition == Condition.Planted || tileCondition == FarmTile.Condition.Grown) tileCondition = FarmTile.Condition.Withered;
             }
             UpdateVisual();
         }
