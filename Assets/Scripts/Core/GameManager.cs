@@ -15,6 +15,7 @@ namespace Core
         float waterLevel = 1f;
         public bool hasAwardedCompletion = false;
         public List<Item> Inventory = new List<Item>();
+        public int selectedSlotIndex = 0;
 
         private void Awake()
         {
