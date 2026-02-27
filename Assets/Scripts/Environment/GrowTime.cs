@@ -15,6 +15,8 @@ namespace Farming
         [Tooltip("Visible at 30s (fully grown).")]
         [SerializeField] private GameObject fullyGrownStage;   // 30 sec
 
+        [SerializeField] private GameObject witheredStage;
+
         [Header("Timing")]
         [SerializeField] private float mediumTime = 15f;
         [SerializeField] private float fullTime = 30f;
@@ -26,11 +28,6 @@ namespace Farming
 
         private void Awake()
         {
-            // Assume the objects are already implement but leave comments on making them visible.
-            // TODO: Assign plantedStage / mediumStage / fullyGrownStage in the Inspector.
-
-            // ✅ AUTO-FIND (so prefab instances work without manual wiring)
-            // These names match what you showed: SM_Tomato_Lv1, SM_Tomato_Lv2, SM_Tomato_Lv3
             if (plantedStage == null)
             {
                 Transform t = FindDeepChild(transform, "SM_Tomato_Lv1");
@@ -47,31 +44,61 @@ namespace Farming
                 if (t != null) fullyGrownStage = t.gameObject;
             }
 
+            // NEW: Withered stage
+            if (witheredStage == null)
+            {
+                Transform t = FindDeepChild(transform, "SM_Tomato_Lv4");
+                if (t != null) witheredStage = t.gameObject;
+            }
+
             SetStage(0, false);
             SetStage(1, false);
             SetStage(2, false);
+
+            // NEW: ensure withered is off at startup
+            if (witheredStage != null) witheredStage.SetActive(false);
+        }
+        public void StartGrowth()
+        {
+
+            if (!gameObject.activeInHierarchy)
+            {
+                gameObject.SetActive(true);
+            }
+
+            StopGrowth();
+
+            if (witheredStage != null) witheredStage.SetActive(false);
+
+            IsGrown = false;
+            IsGrowing = true;
+
+            // 0 sec: planted stage
+            SetStage(0, true);
+            SetStage(1, false);
+            SetStage(2, false);
+
+            growthCoroutine = StartCoroutine(GrowRoutine());
         }
 
-        public void StartGrowth()
-{
-  
-    if (!gameObject.activeInHierarchy)
-    {
-        gameObject.SetActive(true);
-    }
+        public void SetWithered()
+        {
+            StopGrowth();
 
-    StopGrowth();
+            IsGrown = false;
+            IsGrowing = false;
 
-    IsGrown = false;
-    IsGrowing = true;
+            // turn off normal stages
+            SetStage(0, false);
+            SetStage(1, false);
+            SetStage(2, false);
 
-    // 0 sec: planted stage
-    SetStage(0, true);
-    SetStage(1, false);
-    SetStage(2, false);
-
-    growthCoroutine = StartCoroutine(GrowRoutine());
-}
+            // turn on withered stage
+            if (witheredStage != null)
+                witheredStage.SetActive(true);
+            else
+                Debug.LogWarning("[GrowTime] No witheredStage found. Make sure it's named SM_Tomato_Lv4.");
+        }
 
         public void StopGrowth()
         {

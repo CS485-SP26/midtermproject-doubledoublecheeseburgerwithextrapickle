@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Environment;
 
-namespace Farming 
+namespace Farming
 {
     public class FarmTile : MonoBehaviour
     {
         public enum Condition { Grass, Tilled, Watered, Planted, Grown, Withered }
 
-        [SerializeField] private Condition tileCondition = Condition.Grass; 
+        [SerializeField] private Condition tileCondition = Condition.Grass;
 
         [Header("Visuals")]
         [SerializeField] private Material grassMaterial;
@@ -57,7 +57,7 @@ namespace Farming
 
         public void Interact()
         {
-            switch(tileCondition)
+            switch (tileCondition)
             {
                 case FarmTile.Condition.Grass: Till(); break;
                 case FarmTile.Condition.Tilled: Water(); break;
@@ -198,8 +198,8 @@ namespace Farming
 
         private void UpdateVisual()
         {
-            if(tileRenderer == null) return;
-            switch(tileCondition)
+            if (tileRenderer == null) return;
+            switch (tileCondition)
             {
                 case FarmTile.Condition.Grass: tileRenderer.material = grassMaterial; break;
                 case FarmTile.Condition.Tilled: tileRenderer.material = tilledMaterial; break;
@@ -219,8 +219,8 @@ namespace Farming
                 if (active)
                 {
                     m.EnableKeyword("_EMISSION");
-                } 
-                else 
+                }
+                else
                 {
                     m.DisableKeyword("_EMISSION");
                 }
@@ -235,11 +235,17 @@ namespace Farming
             // NEW: don't decay while planted/grown
             // if (tileCondition == Condition.Planted || tileCondition == Condition.Grown) return;
 
-            if(daysSinceLastInteraction >= 2)
+            if (daysSinceLastInteraction >= 2)
             {
-                if(tileCondition == FarmTile.Condition.Watered) tileCondition = FarmTile.Condition.Tilled;
-                else if(tileCondition == FarmTile.Condition.Tilled) tileCondition = FarmTile.Condition.Grass;
-                else if(tileCondition == Condition.Planted || tileCondition == FarmTile.Condition.Grown) tileCondition = FarmTile.Condition.Withered;
+                if (tileCondition == FarmTile.Condition.Watered) tileCondition = FarmTile.Condition.Tilled;
+                else if (tileCondition == FarmTile.Condition.Tilled) tileCondition = FarmTile.Condition.Grass;
+                else if (tileCondition == Condition.Planted || tileCondition == FarmTile.Condition.Grown)
+                {
+                    tileCondition = FarmTile.Condition.Withered;
+
+                    if (growTime != null)
+                        growTime.SetWithered();
+                }
             }
             UpdateVisual();
         }
