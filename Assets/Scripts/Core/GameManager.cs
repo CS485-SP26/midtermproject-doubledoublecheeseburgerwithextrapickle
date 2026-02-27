@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +14,7 @@ namespace Core
         int seeds = 0;
         float waterLevel = 1f;
         public bool hasAwardedCompletion = false;
+        public List<Item> Inventory = new List<Item>();
 
         private void Awake()
         {

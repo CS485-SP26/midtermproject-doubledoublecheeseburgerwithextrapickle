@@ -48,27 +48,6 @@ namespace Character
             farmer.TryTileInteraction(tile);
         }
 
-        //public void SetTool(string tool)
-        //{
-        //    waterCan.SetActive(false);
-        //    hoe.SetActive(false);
-
-        //    switch (tool)
-        //    {
-
-        //        case "Watering Can":
-        //            waterCan.SetActive(true);
-        //            break;
-
-        //        case "Hoe":
-        //            hoe.SetActive(true);
-        //            break;
-
-        //        case "None":
-        //            waterCan.SetActive(false);
-        //            hoe.SetActive(false);   
-        //            break;
-        //    }
-        //}
+       
     }
 }
