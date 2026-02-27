@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +14,9 @@ namespace Core
         int funds = 0;
         int seeds = 0;
         float waterLevel = 1f;
+        public bool hasAwardedCompletion = false;
+        public List<Item> Inventory = new List<Item>();
+        public int selectedSlotIndex = 0;
 
         private void Awake()
         {
@@ -73,6 +78,9 @@ namespace Core
             return funds >= amount;
         }
 
-        
+        public void setWinCondition()
+        {
+            hasAwardedCompletion = true;
+        }
     }
 }

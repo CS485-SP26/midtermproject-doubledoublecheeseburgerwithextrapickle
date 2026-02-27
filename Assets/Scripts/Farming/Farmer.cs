@@ -18,10 +18,11 @@ namespace Farming
         [SerializeField] private GameObject WinText;
         
         //[SerializeField] private TMP_Text seedsText;        
-        private bool hasAwardedCompletion = false;
+        //private bool hasAwardedCompletion = false;
         private bool buyButtonClicked = false; // TODO: Connect this to UI button (I believe)
 
         private AnimatedController animatedController;
+        private InventoryController inventoryController;
 
         void Start()
         {
@@ -31,8 +32,8 @@ namespace Farming
 
             SetTool("None");
             animatedController = GetComponent<AnimatedController>();
+            inventoryController = GetComponent<InventoryController>();
 
-            // 🔹 Read from GameManager, not a local serialized value
             float water = GameManager.Instance.GetWaterLevel();
             waterLevelUI.SetFill(water);
 
@@ -53,12 +54,20 @@ namespace Farming
             switch (tile.GetCondition)
             {
                 case FarmTile.Condition.Grass:
+                    if(inventoryController.GetSelectedItem().itemName != "Hoe") {
+                        break;
+                    }
                     tile.Interact();
                     animatedController.SetTrigger("Till");
                     break;
 
+
                 case FarmTile.Condition.Tilled:
                     {
+                        if (inventoryController.GetSelectedItem().itemName != "Watering Can")
+                        {
+                            break;
+                        }
                         float before = GameManager.Instance.GetWaterLevel();
 
                         // 🔹 Don’t water if empty
@@ -106,16 +115,20 @@ namespace Farming
 
         public void winConditionMet()
         {
-            if(hasAwardedCompletion) return;
+            if(GameManager.Instance.hasAwardedCompletion) return;
 
             if(GameManager.Instance.GetSeeds() >= 5)
             {
-                hasAwardedCompletion = true;
-                GameManager.Instance.AddFunds(30); // Add funds for watering all tiles
+                GameManager.Instance.setWinCondition();
+                GameManager.Instance.AddFunds(30);
                 WinText.SetActive(true);
             }
         }
 
+        public void clearWin()
+        {
+            WinText.SetActive(false);
+        }
         public void OnBuyButtonClicked()
         {
             buyButtonClicked = true;

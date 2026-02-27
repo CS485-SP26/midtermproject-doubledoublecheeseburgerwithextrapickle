@@ -16,12 +16,14 @@ namespace Character
         Farmer farmer;
         [SerializeField] private TileSelector tileSelector;
         AnimatedController animatedController;
+        InventoryController inventoryController;
 
         void Start()
         {
             moveController = GetComponent<MovementController>();
             farmer = GetComponent<Farmer>();
             animatedController = GetComponent<AnimatedController>();
+            inventoryController = GetComponent<InventoryController>();
             ////SetTool("None");
 
             //// TODO: Consider Debug.Assert vs RequireComponent(typeof(...))
@@ -46,27 +48,6 @@ namespace Character
             farmer.TryTileInteraction(tile);
         }
 
-        //public void SetTool(string tool)
-        //{
-        //    waterCan.SetActive(false);
-        //    hoe.SetActive(false);
-
-        //    switch (tool)
-        //    {
-
-        //        case "Watering Can":
-        //            waterCan.SetActive(true);
-        //            break;
-
-        //        case "Hoe":
-        //            hoe.SetActive(true);
-        //            break;
-
-        //        case "None":
-        //            waterCan.SetActive(false);
-        //            hoe.SetActive(false);   
-        //            break;
-        //    }
-        //}
+       
     }
 }
