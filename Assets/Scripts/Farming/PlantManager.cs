@@ -2,15 +2,7 @@ using UnityEngine;
 
 public class Plant : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    // Refactor FarmTile to support Plant object once Farmtile is fully fleshed out and working
+    
+    // PlantManager will support the plants and their growth, but the actual logic for each tile will still be in FarmTile.
 }
