@@ -64,7 +64,7 @@ namespace Farming
                 case FarmTile.Condition.Watered: Debug.Log("Ready for planting"); break;
                 case FarmTile.Condition.Planted: Debug.Log("Growing..."); break;
                 case FarmTile.Condition.Grown: Harvest(); Debug.Log("Fully grown!"); break;
-                case FarmTile.Condition.Withered: Till(); break; // Hoping this works, and allows player to till and water normally again. if not im sorry.
+                case FarmTile.Condition.Withered: Harvest(); break; // Hoping this works, and allows player to till and water normally again. if not im sorry.
 
             }
             daysSinceLastInteraction = 0;
@@ -92,7 +92,7 @@ namespace Farming
 
         public void Harvest()
         {
-            if(tileCondition != Condition.Grown)
+            if(tileCondition != Condition.Grown && tileCondition != Condition.Withered)
             {
                 Debug.Log("[FarmTile] Tried to harvest but tile is not fully grown.");
                 return;
