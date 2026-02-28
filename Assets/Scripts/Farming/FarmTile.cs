@@ -63,7 +63,7 @@ namespace Farming
                 case FarmTile.Condition.Tilled: Water(); break;
                 case FarmTile.Condition.Watered: Debug.Log("Ready for planting"); break;
                 case FarmTile.Condition.Planted: Debug.Log("Growing..."); break;
-                case FarmTile.Condition.Grown: Debug.Log("Fully grown!"); break;
+                case FarmTile.Condition.Grown: Harvest(); Debug.Log("Fully grown!"); break;
                 case FarmTile.Condition.Withered: Till(); break; // Hoping this works, and allows player to till and water normally again. if not im sorry.
 
             }
@@ -82,7 +82,7 @@ namespace Farming
 
         public void Water()
         {
-            // prevent watering while plant is growing/grown
+            
             if (tileCondition == Condition.Planted || tileCondition == Condition.Grown) return;
 
             tileCondition = FarmTile.Condition.Watered;
@@ -90,7 +90,21 @@ namespace Farming
             waterAudio?.Play();
         }
 
-        // NEW: call this from Farmer when player uses 1 seed on a Watered tile
+        public void Harvest()
+        {
+            if(tileCondition != Condition.Grown)
+            {
+                Debug.Log("[FarmTile] Tried to harvest but tile is not fully grown.");
+                return;
+            }
+            tileCondition = FarmTile.Condition.Tilled;
+            Debug.Log("[FarmTile] Harvested plant, resetting to tilled state.");
+            growTime.RemovePlant();
+            UpdateVisual();
+            tillAudio?.Play();
+        }
+
+        
         public bool PlantSeed()
         {
             if (tileCondition != Condition.Watered)
@@ -106,13 +120,13 @@ namespace Farming
 
             if (growTime != null)
             {
-                // ✅ FIX: GrowTime must be active to start coroutines
+                
                 if (!growTime.gameObject.activeInHierarchy)
                 {
                     growTime.gameObject.SetActive(true);
                 }
 
-                // Starts: 0 sec planted, 15 sec medium, 30 sec fully grown
+               
                 growTime.StartGrowth();
             }
             else
@@ -123,38 +137,38 @@ namespace Farming
             return true;
         }
 
-        // NEW: optional helper if you want Farmer to check whether it's fully grown
+        
         public bool IsFullyGrown()
         {
             return tileCondition == Condition.Grown || (growTime != null && growTime.IsGrown);
         }
 
-        // NEW: spawns TomatoStates prefab under this tile so each tile grows independently
+       
         private void EnsureGrowTimeInstance()
         {
-            // If we already have a GrowTime under THIS tile, we are good
+            
             if (growTime != null && growTime.transform != null && growTime.transform.IsChildOf(transform))
             {
-                // ✅ ensure it's active
+                
                 if (!growTime.gameObject.activeInHierarchy)
                     growTime.gameObject.SetActive(true);
                 return;
             }
 
-            // Try to find one in children first (including inactive)
+            
             GrowTime found = GetComponentInChildren<GrowTime>(true);
             if (found != null && found.transform.IsChildOf(transform))
             {
                 growTime = found;
 
-                // ✅ ensure it's active
+               
                 if (!growTime.gameObject.activeInHierarchy)
                     growTime.gameObject.SetActive(true);
 
                 return;
             }
 
-            // If none exists, spawn a unique TomatoStates under THIS tile
+           
             if (tomatoStatesPrefab == null)
             {
                 Debug.LogWarning($"[FarmTile] No tomatoStatesPrefab assigned on {name}. Assign it in the Inspector.");
@@ -163,14 +177,14 @@ namespace Farming
 
             GameObject instance = Instantiate(tomatoStatesPrefab, transform);
 
-            // ✅ FIX: make sure the spawned TomatoStates is active
+            
             instance.SetActive(true);
 
-            instance.name = tomatoStatesPrefab.name; // cleaner hierarchy (optional)
+            instance.name = tomatoStatesPrefab.name; 
             instance.transform.localPosition = tomatoSpawnLocalOffset;
             instance.transform.localRotation = Quaternion.identity;
 
-            // ✅ FIX: cancel out parent scale so plant isn't squished by tile scaling
+           
             Vector3 p = transform.lossyScale;
             instance.transform.localScale = new Vector3(
                 p.x != 0f ? 1f / p.x : 1f,
@@ -178,17 +192,17 @@ namespace Farming
                 p.z != 0f ? 1f / p.z : 1f
             );
 
-            // Grab GrowTime from the spawned instance (including inactive children)
+            
             growTime = instance.GetComponentInChildren<GrowTime>(true);
 
-            // ✅ ensure GrowTime object itself is active
+            
             if (growTime != null && !growTime.gameObject.activeInHierarchy)
                 growTime.gameObject.SetActive(true);
         }
 
         private void Update()
         {
-            // NEW: keep tile condition synced once growth finishes
+            
             if (tileCondition == Condition.Planted && growTime != null && growTime.IsGrown)
             {
                 tileCondition = Condition.Grown;

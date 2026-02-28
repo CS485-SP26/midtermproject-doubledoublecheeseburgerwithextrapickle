@@ -129,6 +129,8 @@ namespace Farming
 
                 case FarmTile.Condition.Withered:
                     {
+                        if(inventoryController.GetSelectedItem().itemName != "Hoe")
+                            break;
                         if (!hasEnergy()) return;
 
                         float before = GameManager.Instance.GetEnergyLevel();
@@ -138,6 +140,22 @@ namespace Farming
 
                         tile.Interact();
                         animatedController.SetTrigger("Till");
+                        break;
+                    }
+
+                case FarmTile.Condition.Grown:
+                    {
+                        if (inventoryController.GetSelectedItem().itemName != "Hoe")
+                            break;
+                        if (!hasEnergy()) return;
+                        float before = GameManager.Instance.GetEnergyLevel();
+                        float after = Mathf.Clamp(before - energyPerUse, 0f, 100f);
+                        GameManager.Instance.SetEnergyLevel(after);
+                        energyLevelUI.SetFill(after / 100f);
+
+                        tile.Interact();
+                        animatedController.SetTrigger("Till");
+                        GameManager.Instance.AddTomato(1);
                         break;
                     }
 

@@ -77,6 +77,32 @@ namespace Core
 
             OnInventoryChanged?.Invoke();
         }
+
+        public void AddTomato(int amount)
+        {
+            Item tomatoes = Inventory.Find(i => i.itemName == "Tomato");
+            if(tomatoes != null)
+            {
+                tomatoes.itemStackSize = Mathf.Clamp(tomatoes.itemStackSize + amount, 0, tomatoes.maxStack);
+            }
+            else
+            {
+                Inventory.Add(new Item { itemIcon = Resources.Load<Sprite>("Tomato"), itemName = "Tomato", itemStackSize = 1, maxStack = 99, isEmpty = false });
+            }
+            OnInventoryChanged?.Invoke();
+        }
+
+        public void SubtractTomato(int amount)
+        {
+            Item tomatoes = Inventory.Find(i => i.itemName == "Tomato");
+            if (tomatoes != null)
+            {
+                tomatoes.itemStackSize = Mathf.Clamp(tomatoes.itemStackSize - amount, 0, tomatoes.maxStack);
+            }
+            OnInventoryChanged?.Invoke();
+        }
+
+
         public int GetSeeds()
         {
             return seeds;

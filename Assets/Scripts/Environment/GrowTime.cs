@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using static Farming.FarmTile;
 
 namespace Farming
 {
@@ -158,5 +159,18 @@ namespace Farming
             }
             return null;
         }
+
+        public void RemovePlant()
+        {
+            if (this != null)
+            {
+                Debug.Log("[GrowTime] Removing plant and destroying GrowTime component.");
+                Destroy(gameObject);
+               
+            }
+
+        }
     }
+
+
 }
