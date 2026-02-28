@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace Farming
 {
-    public class FarmTileManager:MonoBehaviour
+    public class FarmTileManager : MonoBehaviour
     {
         [SerializeField] private GameObject farmTilePrefab;
         [SerializeField] DayController dayController;
@@ -26,7 +26,7 @@ namespace Farming
             public int cropID;
             public int growthStage;
         }
-        
+
         void Start()
         {
             Debug.Assert(farmTilePrefab, "FarmTileManager requires a farmTilePrefab");
@@ -42,7 +42,7 @@ namespace Farming
 
         void OnDisable()
         {
-            dayController.dayPassedEvent.RemoveListener(this.OnDayPassed);            
+            dayController.dayPassedEvent.RemoveListener(this.OnDayPassed);
         }
 
         public void OnDayPassed()
@@ -66,7 +66,7 @@ namespace Farming
         {
             Vector3 spawnPos = transform.position;
             int count = 0;
-            GameObject clone = null; 
+            GameObject clone = null;
 
             for (int c = 0; c < cols; c++)
             {
@@ -86,7 +86,7 @@ namespace Farming
         public void SaveTiles()
         {
             savedTileStates.Clear();
-            foreach(FarmTile tile in tiles)
+            foreach (FarmTile tile in tiles)
             {
                 FarmTileData data = new FarmTileData
                 {
@@ -101,11 +101,11 @@ namespace Farming
 
         void RestoreTiles()
         {
-            if(savedTileStates.Count == 0)
+            if (savedTileStates.Count == 0)
                 return;
-            for(int i = 0; i < tiles.Count; i++)
+            for (int i = 0; i < tiles.Count; i++)
             {
-                if(i < savedTileStates.Count)
+                if (i < savedTileStates.Count)
                 {
                     FarmTileData data = savedTileStates[i];
 
@@ -133,7 +133,7 @@ namespace Farming
             #endif
         }
 
-        void ValidateGrid() 
+        void ValidateGrid()
         {
             if (!farmTilePrefab) return;
             tiles.Clear();

@@ -41,7 +41,7 @@ namespace Core
         {
             seeds += amount;
         }
-        
+
         public int GetSeeds()
         {
             return seeds;
@@ -72,6 +72,6 @@ namespace Core
             return funds >= amount;
         }
 
-        
+
     }
 }
