@@ -68,7 +68,7 @@ namespace Farming
         public int cropID;
         public int growthStage;
         
-        private void UpdateVisual()
+        public void UpdateVisual()
         {
             if(tileRenderer == null) return;
             switch(tileCondition)
