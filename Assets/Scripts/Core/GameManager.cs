@@ -102,7 +102,11 @@ namespace Core
             OnInventoryChanged?.Invoke();
         }
 
-
+        public int GetTomatoCount()
+        {
+            Item tomatoes = Inventory.Find(i => i.itemName == "Tomato");
+            return tomatoes != null ? tomatoes.itemStackSize : 0;
+        }
         public int GetSeeds()
         {
             return seeds;
