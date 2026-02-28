@@ -13,7 +13,7 @@ public class EquipmentManager : MonoBehaviour
 
     public void EquipItemToHand(Item tool)
     {
-        if (tool.isEmpty)
+        if (tool == null)
         {
             farmer.SetTool("None");
             return;

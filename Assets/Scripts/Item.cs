@@ -8,7 +8,14 @@ public class Item
     public int maxStack;
     public bool isEmpty;
 
-
+    public Item()
+    {
+        itemName = "None";
+        itemIcon = null;
+        itemStackSize = 0;
+        maxStack = 99;
+        isEmpty = true;
+    }
 
 
     //public Item(string name, Sprite icon, int stackSize, int maxStack)

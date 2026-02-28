@@ -115,7 +115,15 @@ public class InventoryController : MonoBehaviour
         }
         selectedSlot.Select();
         GameManager.Instance.selectedSlotIndex = GetSlotIndex(selectedSlot);
-        equipmentManager.EquipItemToHand(GetSelectedItem());
+        Item item = GetSelectedItem();
+
+        if (item == null)
+        {
+            //equipmentManager.UnequipHand();   // or do nothing
+            return;
+        }
+
+        equipmentManager.EquipItemToHand(item);
 
     }
 
@@ -134,8 +142,14 @@ public class InventoryController : MonoBehaviour
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i].IsSelected)
+            {
+                if (i < 0 || i >= inventoryItems.Count)
+                    return null;
+
                 return inventoryItems[i];
+            }
         }
+
         return null;
     }
 
