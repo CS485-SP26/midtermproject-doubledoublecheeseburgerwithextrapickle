@@ -1295,9 +1295,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 277292644}
-        m_TargetAssemblyTypeName: PurchaseHandler, Assembly-CSharp
-        m_MethodName: PurchaseItem
+      - m_Target: {fileID: 705428804}
+        m_TargetAssemblyTypeName: SellHandler, Assembly-CSharp
+        m_MethodName: SellPlant
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
