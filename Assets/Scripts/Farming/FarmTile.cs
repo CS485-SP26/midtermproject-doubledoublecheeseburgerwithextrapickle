@@ -62,6 +62,12 @@ namespace Farming
             waterAudio?.Play();
         }
 
+        public bool isPlowed;
+        public bool isWatered;
+        public bool hasCrop;
+        public int cropID;
+        public int growthStage;
+        
         private void UpdateVisual()
         {
             if(tileRenderer == null) return;

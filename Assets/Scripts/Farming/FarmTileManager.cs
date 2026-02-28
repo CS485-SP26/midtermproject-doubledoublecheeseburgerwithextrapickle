@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Environment;
+using UnityEngine.SceneManagement;
 
 namespace Farming
 {
@@ -13,11 +14,25 @@ namespace Farming
         [SerializeField] private int cols = 4;
         [SerializeField] private float tileGap = 0.1f;
         private List<FarmTile> tiles = new List<FarmTile>();
+
+        private List<FarmTileData> savedTileStates = new List<FarmTileData>();
+
+        [System.Serializable]
+        private class FarmTileData
+        {
+            public bool isPlowed;
+            public bool isWatered;
+            public bool hasCrop;
+            public int cropID;
+            public int growthStage;
+        }
         
         void Start()
         {
             Debug.Assert(farmTilePrefab, "FarmTileManager requires a farmTilePrefab");
             Debug.Assert(dayController, "FarmTileManager requires a dayController");
+
+            RestoreTiles();
         }
 
         void OnEnable()
@@ -65,6 +80,42 @@ namespace Farming
                 }
                 spawnPos.z += clone.transform.localScale.z + tileGap;
                 spawnPos.x = transform.position.x;
+            }
+        }
+
+        public void SaveTiles()
+        {
+            savedTileStates.Clear();
+            foreach(FarmTile tile in tiles)
+            {
+                FarmTileData data = new FarmTileData
+                {
+                    isPlowed = tile.isPlowed,
+                    isWatered = tile.isWatered,
+                    hasCrop = tile.hasCrop,
+                    cropID = tile.cropID,
+                    growthStage = tile.growthStage
+                };
+            }
+        }
+
+        void RestoreTiles()
+        {
+            if(savedTileStates.Count == 0)
+                return;
+            for(int i = 0; i < tiles.Count; i++)
+            {
+                if(i < savedTileStates.Count)
+                {
+                    FarmTileData data = savedTileStates[i];
+
+                    tiles[i].isPlowed = data.isPlowed;
+                    tiles[i].isWatered = data.isWatered;
+                    tiles[i].hasCrop = data.hasCrop;
+                    tiles[i].cropID = data.cropID;
+                    tiles[i].growthStage = data.growthStage;
+                    tiles[i].UpdateVisual();
+                }
             }
         }
 
