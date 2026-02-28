@@ -16,9 +16,14 @@ public class HotbarSlotUI : MonoBehaviour
         icon.enabled = true;
 
         if (item.maxStack > 1)
-            countText.text = item.maxStack.ToString();
+        {
+            countText.gameObject.SetActive(true);
+            countText.text = item.itemStackSize > 1 ? item.itemStackSize.ToString() : "";
+        }
         else
-            countText.text = "";
+        {
+            countText.gameObject.SetActive(false);
+        }
     }
 
     public void Clear()

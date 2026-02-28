@@ -5,6 +5,7 @@ public class PurchaseHandler : MonoBehaviour
 {
 
     [SerializeField] private GameObject purchaseButton;
+    InventoryController inventoryController;
     public int seedCost = 2;
 
     private void Start()

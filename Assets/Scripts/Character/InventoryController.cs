@@ -12,17 +12,20 @@ public class InventoryController : MonoBehaviour
 
     public void Start()
     {
+
+        GameManager.Instance.OnInventoryChanged += HandleInventoryChanged;
         equipmentManager = GetComponent<EquipmentManager>();
-        if(GameManager.Instance.Inventory.Count == slots.Length)
-        {
-            inventoryItems = new List<Item>(GameManager.Instance.Inventory);
-        }
-        else
+        if (GameManager.Instance.Inventory.Count == 0)
         {
             inventoryItems = new List<Item>();
             InitializeDefaultInventory();
             SaveToGameManager();
         }
+        else
+        {
+            inventoryItems = new List<Item>(GameManager.Instance.Inventory);
+        }
+
 
         RefreshHotbar();
 
@@ -30,38 +33,48 @@ public class InventoryController : MonoBehaviour
         SelectSlot(slots[index]);
     }
 
+    private void HandleInventoryChanged()
+    {
+        inventoryItems = new List<Item>(GameManager.Instance.Inventory);
+        RefreshHotbar();
+    }
+
+    private void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnInventoryChanged -= HandleInventoryChanged;
+    }
+
+
+
     private void InitializeDefaultInventory()
     {
-        for (int i = 0; i < slots.Length; i++)
-        {
-            inventoryItems.Add(new Item
-            {
-                itemIcon = Resources.Load<Sprite>("Hotbar"),
-                itemName = "None",
-                itemStackSize = 0,
-                maxStack = 0,
-                isEmpty = true
-            });
-        }
+        inventoryItems = new List<Item>();
 
-        inventoryItems[0] = new Item
+       
+        inventoryItems.Add(new Item
         {
             itemIcon = Resources.Load<Sprite>("Hoe"),
             itemName = "Hoe",
             itemStackSize = 1,
             maxStack = 1,
             isEmpty = false
-        };
+        });
 
-        inventoryItems[1] = new Item
+       
+        inventoryItems.Add(new Item
         {
             itemIcon = Resources.Load<Sprite>("WaterCan"),
             itemName = "Watering Can",
             itemStackSize = 1,
             maxStack = 1,
             isEmpty = false
-        };
+        });
+
+
+       
     }
+
 
 
 
@@ -87,8 +100,8 @@ public class InventoryController : MonoBehaviour
         {
             if (i < inventoryItems.Count)
                 slots[i].SetItem(inventoryItems[i]);
-            //else
-            //    slots[i].Clear();
+            else
+                slots[i].Clear();
         }
 
     }
@@ -136,4 +149,5 @@ public class InventoryController : MonoBehaviour
         GameManager.Instance.Inventory = new List<Item>(inventoryItems);
     }
 
+    
 }

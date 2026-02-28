@@ -16,6 +16,7 @@ namespace Core
         public bool hasAwardedCompletion = false;
         public List<Item> Inventory = new List<Item>();
         public int selectedSlotIndex = 0;
+        public event Action OnInventoryChanged;
 
         float energyLevel = 100f;
         private void Awake()
@@ -46,11 +47,35 @@ namespace Core
         public void AddSeeds(int amount)
         {
             seeds += amount;
+            Item seedStack = Inventory.Find(i => i.itemName == "Seed");
+
+            if(seedStack != null)
+            {
+                seedStack.itemStackSize = Mathf.Clamp(seedStack.itemStackSize + amount, 0, seedStack.maxStack);
+            }
+            else
+            {
+                Inventory.Add(new Item { itemIcon = Resources.Load<Sprite>("Seed"), itemName = "Seed", itemStackSize = amount, maxStack = 99, isEmpty = false });
+            }
+
+           OnInventoryChanged?.Invoke();
+
+
+
         }
         public void SubtractSeeds(int amount)
         {
-        seeds -= amount;
-        if (seeds < 0) seeds = 0;
+            seeds -= amount;
+            if (seeds < 0) seeds = 0;
+
+            Item seedStack = Inventory.Find(i => i.itemName == "Seed");
+            if (seedStack != null)
+            {
+                seedStack.itemStackSize = Mathf.Clamp(seedStack.itemStackSize - amount, 0, seedStack.maxStack);
+
+            }
+
+            OnInventoryChanged?.Invoke();
         }
         public int GetSeeds()
         {
