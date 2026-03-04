@@ -1,28 +1,20 @@
 using UnityEngine;
 
+[System.Serializable]
 public class Item
 {
-    public string itemName;
-    public Sprite itemIcon;
-    public int itemStackSize;
-    public int maxStack;
+    public ItemData data;       // reference to ScriptableObject
+    public int itemStackSize;   // runtime value
     public bool isEmpty;
+
+    public string Name => data != null ? data.itemName : "None";
+    public Sprite Icon => data != null ? data.itemIcon : null;
+    public int MaxStack => data != null ? data.maxStack : 0;
 
     public Item()
     {
-        itemName = "None";
-        itemIcon = null;
+        data = null;
         itemStackSize = 0;
-        maxStack = 99;
         isEmpty = true;
     }
-
-
-    //public Item(string name, Sprite icon, int stackSize, int maxStack)
-    //{
-    //    this.itemName = name;
-    //    this.itemIcon = icon;
-    //    this.itemStackSize = stackSize;
-    //    this.maxStack = maxStack;
-    //}
 }

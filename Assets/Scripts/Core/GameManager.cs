@@ -1,5 +1,4 @@
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,13 +11,18 @@ namespace Core
 
         int funds = 0;
         int seeds = 0;
+        int tomatoes = 0;
+
         float waterLevel = 1f;
+        float energyLevel = 100f;
+
         public bool hasAwardedCompletion = false;
+
         public List<Item> Inventory = new List<Item>();
         public int selectedSlotIndex = 0;
+
         public event Action OnInventoryChanged;
 
-        float energyLevel = 100f;
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -29,6 +33,8 @@ namespace Core
 
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+
         }
 
 
@@ -39,112 +45,63 @@ namespace Core
 
         public void SubtractFunds(int amount)
         {
-            funds -= amount;
-            if (funds < 0)
-                funds = 0;
+            funds = Mathf.Max(0, funds - amount);
         }
+
+        public int GetFunds() => funds;
+
 
         public void AddSeeds(int amount)
         {
             seeds += amount;
-            Item seedStack = Inventory.Find(i => i.itemName == "Seed");
-
-            if(seedStack != null)
-            {
-                seedStack.itemStackSize = Mathf.Clamp(seedStack.itemStackSize + amount, 0, seedStack.maxStack);
-            }
-            else
-            {
-                Inventory.Add(new Item { itemIcon = Resources.Load<Sprite>("Seed"), itemName = "Seed", itemStackSize = amount, maxStack = 99, isEmpty = false });
-            }
-
-           OnInventoryChanged?.Invoke();
-
-
-
-        }
-        public void SubtractSeeds(int amount)
-        {
-            seeds -= amount;
-            if (seeds < 0) seeds = 0;
-
-            Item seedStack = Inventory.Find(i => i.itemName == "Seed");
-            if (seedStack != null)
-            {
-                seedStack.itemStackSize = Mathf.Clamp(seedStack.itemStackSize - amount, 0, seedStack.maxStack);
-
-            }
-
             OnInventoryChanged?.Invoke();
         }
 
+        public void SubtractSeeds(int amount)
+        {
+            seeds = Mathf.Max(0, seeds - amount);
+            OnInventoryChanged?.Invoke();
+        }
+
+        public int GetSeeds() => seeds;
+
+
         public void AddTomato(int amount)
         {
-            Item tomatoes = Inventory.Find(i => i.itemName == "Tomato");
-            if(tomatoes != null)
-            {
-                tomatoes.itemStackSize = Mathf.Clamp(tomatoes.itemStackSize + amount, 0, tomatoes.maxStack);
-            }
-            else
-            {
-                Inventory.Add(new Item { itemIcon = Resources.Load<Sprite>("Tomato"), itemName = "Tomato", itemStackSize = 1, maxStack = 99, isEmpty = false });
-            }
+            tomatoes += amount;
             OnInventoryChanged?.Invoke();
         }
 
         public void SubtractTomato(int amount)
         {
-            Item tomatoes = Inventory.Find(i => i.itemName == "Tomato");
-            if (tomatoes != null)
-            {
-                tomatoes.itemStackSize = Mathf.Clamp(tomatoes.itemStackSize - amount, 0, tomatoes.maxStack);
-            }
+            tomatoes = Mathf.Max(0, tomatoes - amount);
             OnInventoryChanged?.Invoke();
         }
 
-        public int GetTomatoCount()
-        {
-            Item tomatoes = Inventory.Find(i => i.itemName == "Tomato");
-            return tomatoes != null ? tomatoes.itemStackSize : 0;
-        }
-        public int GetSeeds()
-        {
-            return seeds;
-        }
+        public int GetTomatoCount() => tomatoes;
 
-        public int GetFunds()
-        {
-            return funds;
-        }
 
         public void SetWaterLevel(float value)
         {
             waterLevel = value;
         }
 
-        public float GetWaterLevel()
-        {
-            return waterLevel;
-        }
+        public float GetWaterLevel() => waterLevel;
 
         public void SetEnergyLevel(float value)
         {
             energyLevel = value;
         }
 
-        public float GetEnergyLevel()
-        {
-            return energyLevel;
-        }
+        public float GetEnergyLevel() => energyLevel;
+
+
         public void LoadScenebyName(string name)
         {
             SceneManager.LoadScene(name);
         }
 
-        public bool CanAfford(int amount)
-        {
-            return funds >= amount;
-        }
+        public bool CanAfford(int amount) => funds >= amount;
 
         public void setWinCondition()
         {

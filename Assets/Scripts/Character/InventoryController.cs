@@ -10,6 +10,12 @@ public class InventoryController : MonoBehaviour
     public HotbarSlotUI[] slots;
     EquipmentManager equipmentManager;
 
+    public ItemData hoeData;
+    public ItemData wateringCanData;
+    public ItemData seedData;
+    public ItemData tomatoData;
+
+
     public void Start()
     {
 
@@ -35,7 +41,23 @@ public class InventoryController : MonoBehaviour
 
     private void HandleInventoryChanged()
     {
-        inventoryItems = new List<Item>(GameManager.Instance.Inventory);
+        inventoryItems.Clear();
+
+        // Always add starting tools
+        inventoryItems.Add(CreateItem(hoeData));
+        inventoryItems.Add(CreateItem(wateringCanData));
+
+        // Add seeds if player has any
+        int seedCount = GameManager.Instance.GetSeeds();
+        if (seedCount > 0)
+            inventoryItems.Add(CreateItem(seedData, seedCount));
+
+        // Add tomatoes if player has any
+        int tomatoCount = GameManager.Instance.GetTomatoCount();
+        if (tomatoCount > 0)
+            inventoryItems.Add(CreateItem(tomatoData, tomatoCount));
+
+        SaveToGameManager();
         RefreshHotbar();
     }
 
@@ -51,48 +73,12 @@ public class InventoryController : MonoBehaviour
     {
         inventoryItems = new List<Item>();
 
-       
-        inventoryItems.Add(new Item
-        {
-            itemIcon = Resources.Load<Sprite>("Hoe"),
-            itemName = "Hoe",
-            itemStackSize = 1,
-            maxStack = 1,
-            isEmpty = false
-        });
-
-       
-        inventoryItems.Add(new Item
-        {
-            itemIcon = Resources.Load<Sprite>("WaterCan"),
-            itemName = "Watering Can",
-            itemStackSize = 1,
-            maxStack = 1,
-            isEmpty = false
-        });
+        AddItem(CreateItem(hoeData));
+        AddItem(CreateItem(wateringCanData));
 
 
-       
     }
 
-
-
-
-    //private void clearInventory()
-    //{
-    //    for(int i = 0; i < slots.Length; i++)
-    //    {
-    //        inventoryItems.Add(new Item
-    //        {
-    //            itemIcon = Resources.Load<Sprite>("Hotbar"),
-    //            itemName = "None",
-    //            itemStackSize = 0,
-    //            maxStack = 0,
-    //            isEmpty = true
-    //        });
-
-    //    }
-    //}
 
     public void RefreshHotbar()
     {
@@ -153,15 +139,29 @@ public class InventoryController : MonoBehaviour
         return null;
     }
 
-    //public string GetSelectedItemName(Item item)
-    //{
-    //    return item != null ? item.itemName : "None";
-    //}
 
     public void SaveToGameManager()
     {
         GameManager.Instance.Inventory = new List<Item>(inventoryItems);
     }
 
-    
+    public void AddItem(Item newItem)
+    {
+        inventoryItems.Add(newItem);
+        SaveToGameManager();
+        RefreshHotbar();
+    }
+
+
+    public Item CreateItem(ItemData data, int amount = 1)
+    {
+        return new Item
+        {
+            data = data,
+            itemStackSize = amount,
+            isEmpty = false
+        };
+    }
+
+
 }

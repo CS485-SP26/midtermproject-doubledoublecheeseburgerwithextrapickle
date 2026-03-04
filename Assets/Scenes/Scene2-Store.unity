@@ -5081,6 +5081,22 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1570239835244265367, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
+      propertyPath: hoeData
+      value: 
+      objectReference: {fileID: 11400000, guid: c56c987980cbdb44bbff7e801def605c, type: 2}
+    - target: {fileID: 1570239835244265367, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
+      propertyPath: seedData
+      value: 
+      objectReference: {fileID: 11400000, guid: 8a8d0ce5dff81fc40896fcc5a806c736, type: 2}
+    - target: {fileID: 1570239835244265367, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
+      propertyPath: tomatoData
+      value: 
+      objectReference: {fileID: 11400000, guid: 0192714255e6a544888672f6df5721e7, type: 2}
+    - target: {fileID: 1570239835244265367, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
+      propertyPath: wateringCanData
+      value: 
+      objectReference: {fileID: 11400000, guid: b36e5f1ec131ee748bb97eef7cef0c9e, type: 2}
+    - target: {fileID: 1570239835244265367, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
       propertyPath: 'slots.Array.data[0]'
       value: 
       objectReference: {fileID: 1079090111}

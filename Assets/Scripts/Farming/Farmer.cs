@@ -19,7 +19,7 @@ namespace Farming
         [SerializeField] private TMP_Text fundsText;
         [SerializeField] private GameObject WinText;
 
-        private bool buyButtonClicked = false; 
+        private bool buyButtonClicked = false;
 
         private AnimatedController animatedController;
         private InventoryController inventoryController;
@@ -51,8 +51,6 @@ namespace Farming
                 WinText.SetActive(false);
             else
                 Debug.LogWarning("[Farmer] WinText is not assigned in the inspector.");
-
-            
         }
 
         void Update()
@@ -68,7 +66,8 @@ namespace Farming
             {
                 case FarmTile.Condition.Grass:
                     {
-                        if (inventoryController.GetSelectedItem().itemName != "Hoe")
+                        // UPDATED: itemName → data.itemName
+                        if (inventoryController.GetSelectedItem().data.itemName != "Hoe")
                             break;
 
                         float before = GameManager.Instance.GetEnergyLevel();
@@ -89,7 +88,8 @@ namespace Farming
 
                 case FarmTile.Condition.Tilled:
                     {
-                        if (inventoryController.GetSelectedItem().itemName != "Watering Can")
+                        // UPDATED
+                        if (inventoryController.GetSelectedItem().data.itemName != "Watering Can")
                             break;
 
                         float before = GameManager.Instance.GetWaterLevel();
@@ -105,6 +105,43 @@ namespace Farming
 
                         tile.Interact();
                         animatedController.SetTrigger("Water");
+                        break;
+                    }
+
+                case FarmTile.Condition.Withered:
+                    {
+                        // UPDATED
+                        if (inventoryController.GetSelectedItem().data.itemName != "Hoe")
+                            break;
+
+                        if (!hasEnergy()) return;
+
+                        float before = GameManager.Instance.GetEnergyLevel();
+                        float after = Mathf.Clamp(before - energyPerUse, 0f, 100f);
+                        GameManager.Instance.SetEnergyLevel(after);
+                        energyLevelUI.SetFill(after / 100f);
+
+                        tile.Interact();
+                        animatedController.SetTrigger("Till");
+                        break;
+                    }
+
+                case FarmTile.Condition.Grown:
+                    {
+                        // UPDATED
+                        if (inventoryController.GetSelectedItem().data.itemName != "Hoe")
+                            break;
+
+                        if (!hasEnergy()) return;
+
+                        float before = GameManager.Instance.GetEnergyLevel();
+                        float after = Mathf.Clamp(before - energyPerUse, 0f, 100f);
+                        GameManager.Instance.SetEnergyLevel(after);
+                        energyLevelUI.SetFill(after / 100f);
+
+                        tile.Interact();
+                        animatedController.SetTrigger("Till");
+                        GameManager.Instance.AddTomato(1);
                         break;
                     }
 
@@ -127,43 +164,10 @@ namespace Farming
                         break;
                     }
 
-                case FarmTile.Condition.Withered:
-                    {
-                        if(inventoryController.GetSelectedItem().itemName != "Hoe")
-                            break;
-                        if (!hasEnergy()) return;
-
-                        float before = GameManager.Instance.GetEnergyLevel();
-                        float after = Mathf.Clamp(before - energyPerUse, 0f, 100f);
-                        GameManager.Instance.SetEnergyLevel(after);
-                        energyLevelUI.SetFill(after / 100f);
-
-                        tile.Interact();
-                        animatedController.SetTrigger("Till");
-                        break;
-                    }
-
-                case FarmTile.Condition.Grown:
-                    {
-                        if (inventoryController.GetSelectedItem().itemName != "Hoe")
-                            break;
-                        if (!hasEnergy()) return;
-                        float before = GameManager.Instance.GetEnergyLevel();
-                        float after = Mathf.Clamp(before - energyPerUse, 0f, 100f);
-                        GameManager.Instance.SetEnergyLevel(after);
-                        energyLevelUI.SetFill(after / 100f);
-
-                        tile.Interact();
-                        animatedController.SetTrigger("Till");
-                        GameManager.Instance.AddTomato(1);
-                        break;
-                    }
-
                 default:
                     break;
             }
         }
-
 
         public void winConditionMet()
         {
@@ -183,11 +187,11 @@ namespace Farming
             }
         }
 
-
         public void clearWin()
         {
             WinText.SetActive(false);
         }
+
         public void OnBuyButtonClicked()
         {
             buyButtonClicked = true;
@@ -203,10 +207,10 @@ namespace Farming
             }
             return true;
         }
+
         public bool hasEnergy()
         {
-            float beforeEnergy = GameManager.Instance.GetEnergyLevel(); // 0..100
-            // Don't till if no energy
+            float beforeEnergy = GameManager.Instance.GetEnergyLevel();
             if (beforeEnergy < energyPerUse)
             {
                 Debug.Log("[Farmer] Tried to perform but no energy left in the tank.");
@@ -215,7 +219,6 @@ namespace Farming
             return true;
         }
 
-        
         public void SetTool(string tool)
         {
             waterCan.SetActive(false);

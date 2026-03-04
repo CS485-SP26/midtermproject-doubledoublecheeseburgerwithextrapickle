@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,10 +12,12 @@ public class HotbarSlotUI : MonoBehaviour
 
     public void SetItem(Item item)
     {
-        icon.sprite = item.itemIcon;
+        // UPDATED: itemIcon → data.itemIcon
+        icon.sprite = item.data.itemIcon;
         icon.enabled = true;
 
-        if (item.maxStack > 1)
+        // UPDATED: maxStack → data.maxStack
+        if (item.data.maxStack > 1)
         {
             countText.gameObject.SetActive(true);
             countText.text = item.itemStackSize > 1 ? item.itemStackSize.ToString() : "";
@@ -56,7 +58,4 @@ public class HotbarSlotUI : MonoBehaviour
         Debug.Log("Color changed");
         border.color = newColor;
     }
-
-
-
 }

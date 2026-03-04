@@ -1,4 +1,4 @@
-using Farming;
+﻿using Farming;
 using UnityEngine;
 
 public class EquipmentManager : MonoBehaviour
@@ -13,13 +13,13 @@ public class EquipmentManager : MonoBehaviour
 
     public void EquipItemToHand(Item tool)
     {
-        if (tool == null)
+        if (tool == null || tool.data == null)   // safer null check
         {
             farmer.SetTool("None");
             return;
         }
-        farmer.SetTool(tool.itemName);
+
+        // UPDATED: itemName → data.itemName
+        farmer.SetTool(tool.data.itemName);
     }
-
-
 }
