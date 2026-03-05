@@ -23,6 +23,9 @@ namespace Core
 
         public event Action OnInventoryChanged;
 
+        public FarmGridData SavedFarmData;
+
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -98,8 +101,17 @@ namespace Core
 
         public void LoadScenebyName(string name)
         {
+            // Try to find the FarmTileManager in the current scene
+            var farmManager = FindAnyObjectByType<Farming.FarmTileManager>();
+
+            if (farmManager != null)
+            {
+                SavedFarmData = farmManager.CaptureGridState();
+            }
+
             SceneManager.LoadScene(name);
         }
+
 
         public bool CanAfford(int amount) => funds >= amount;
 

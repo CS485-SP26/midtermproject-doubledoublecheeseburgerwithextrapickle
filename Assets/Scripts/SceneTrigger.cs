@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Core;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,7 +11,7 @@ public class SceneTrigger : MonoBehaviour
         Debug.Log($"Swapping to scene: {sceneName}");
         // Implement scene swapping logic here, e.g., using UnityEngine.SceneManagement
 
-        SceneManager.LoadScene(sceneName);
+        GameManager.Instance.LoadScenebyName(sceneName);
 
     }
 }

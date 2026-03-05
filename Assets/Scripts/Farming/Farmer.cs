@@ -141,7 +141,6 @@ namespace Farming
 
                         tile.Interact();
                         animatedController.SetTrigger("Till");
-                        GameManager.Instance.AddTomato(1);
                         break;
                     }
 

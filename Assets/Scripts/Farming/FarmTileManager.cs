@@ -1,23 +1,30 @@
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
+using Core;
 using Environment;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
 
 namespace Farming
 {
-    public class FarmTileManager:MonoBehaviour
+    public class FarmTileManager : MonoBehaviour
     {
         [SerializeField] private GameObject farmTilePrefab;
         [SerializeField] DayController dayController;
         [SerializeField] private int rows = 4;
         [SerializeField] private int cols = 4;
         [SerializeField] private float tileGap = 0.1f;
+
         private List<FarmTile> tiles = new List<FarmTile>();
-        
+
         void Start()
         {
             Debug.Assert(farmTilePrefab, "FarmTileManager requires a farmTilePrefab");
             Debug.Assert(dayController, "FarmTileManager requires a dayController");
+
+            ValidateGrid();
+
+            if (GameManager.Instance.SavedFarmData != null)
+                RestoreGridState(GameManager.Instance.SavedFarmData);
         }
 
         void OnEnable()
@@ -27,71 +34,118 @@ namespace Farming
 
         void OnDisable()
         {
-            dayController.dayPassedEvent.RemoveListener(this.OnDayPassed);            
+            dayController.dayPassedEvent.RemoveListener(this.OnDayPassed);
         }
 
         public void OnDayPassed()
         {
-            IncrementDays(1);
+            // Soil decay only — NOT plant withering anymore
+            foreach (FarmTile farmTile in tiles)
+                farmTile.OnDayPassed();
         }
 
-        public void IncrementDays(int count)
+        // ---------------- SAVE ----------------
+
+        public FarmGridData CaptureGridState()
         {
-            while (count > 0)
+            FarmGridData gridData = new FarmGridData();
+
+            foreach (var tile in tiles)
             {
-                foreach (FarmTile farmTile in tiles)
+                FarmTileData data = new FarmTileData();
+
+                data.condition = tile.GetCondition;
+                data.daysSinceLastInteraction = tile.GetDaysSinceLastInteraction();
+                data.hasPlant = tile.HasGrowTime();
+
+                if (data.hasPlant)
                 {
-                    farmTile.OnDayPassed();
+                    // NEW: save growth stage
+                    if (tile.IsPlantWithered()) data.growthStage = 3;
+                    else if (tile.IsPlantGrown()) data.growthStage = 2;
+                    else if (tile.IsPlantMedium()) data.growthStage = 1;
+                    else data.growthStage = 0;
                 }
-                count--;
+
+                gridData.tiles.Add(data);
+            }
+
+            return gridData;
+        }
+
+        // ---------------- RESTORE ----------------
+
+        public void RestoreGridState(FarmGridData data)
+        {
+            if (data == null || data.tiles.Count != tiles.Count)
+                return;
+
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                FarmTile tile = tiles[i];
+                FarmTileData saved = data.tiles[i];
+
+                tile.ForceSetCondition(saved.condition);
+                tile.SetDaysSinceLastInteraction(saved.daysSinceLastInteraction);
+
+                if (saved.hasPlant)
+                {
+                    tile.ForceEnsureGrowTime();
+                    GrowTime gt = tile.GetGrowTime();
+
+                    // NEW: restore correct growth stage
+                    gt.LoadState(saved.growthStage);
+                }
+
+                tile.ForceUpdateVisual();
             }
         }
+
+        // ---------------- GRID CREATION ----------------
 
         void InstantiateTiles()
         {
             Vector3 spawnPos = transform.position;
             int count = 0;
-            GameObject clone = null; 
+            GameObject clone = null;
 
             for (int c = 0; c < cols; c++)
             {
                 for (int r = 0; r < rows; r++)
                 {
                     clone = Instantiate(farmTilePrefab, spawnPos, Quaternion.identity);
-                    clone.name = "Farm Tile " + count++.ToString();
+                    clone.name = "Farm Tile " + count++;
                     spawnPos.x += clone.transform.localScale.x + tileGap;
-                    clone.transform.parent = transform; // build heirarchy
-                    tiles.Add(clone.GetComponent<FarmTile>()); // for resize/delete
+                    clone.transform.parent = transform;
+                    tiles.Add(clone.GetComponent<FarmTile>());
                 }
                 spawnPos.z += clone.transform.localScale.z + tileGap;
                 spawnPos.x = transform.position.x;
             }
         }
 
-        // ***************************************************************** //
-        // Below this line is code to suppor the Unity Editor (Advanced)
-        // Please feel free to disregard everything below this
-        // ***************************************************************** //
         void OnValidate()
         {
-            #if UNITY_EDITOR
-            EditorApplication.delayCall += () => {
-                if (this == null) return; // Guard against the object being deleted
+#if UNITY_EDITOR
+            if (Application.isPlaying) return;
+
+            EditorApplication.delayCall += () =>
+            {
+                if (this == null) return;
                 ValidateGrid();
             };
-            #endif
+#endif
         }
 
-        void ValidateGrid() 
+        void ValidateGrid()
         {
             if (!farmTilePrefab) return;
+
             tiles.Clear();
             foreach (Transform child in transform)
             {
-                if (child.gameObject.TryGetComponent<FarmTile>(out var tile))
-                {
+                if (child.TryGetComponent<FarmTile>(out var tile))
                     tiles.Add(tile);
-                }
             }
 
             int newCount = rows * cols;
@@ -107,11 +161,11 @@ namespace Farming
         {
             foreach (FarmTile tile in tiles)
             {
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 DestroyImmediate(tile.gameObject);
-                #else
+#else
                 Destroy(tile.gameObject);
-                #endif
+#endif
             }
             tiles.Clear();
         }

@@ -1,3 +1,4 @@
+using Core;
 using Farming;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -45,14 +46,14 @@ public class ShopTrigger : SceneTrigger
 
     public void EnterStore()
     {
-        SceneManager.LoadScene("Scene2-Store");
+        GameManager.Instance.LoadScenebyName("Scene2-Store");
     }
 
     public void ExitStore()
     {
         Debug.Log("ExitStore() called");
 
-        SceneManager.LoadScene("Scene1-FarmingSim");
+        GameManager.Instance.LoadScenebyName("Scene1-FarmingSim");
     }
 
     private string setStoreText()

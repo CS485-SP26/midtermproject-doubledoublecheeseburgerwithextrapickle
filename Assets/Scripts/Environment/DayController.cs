@@ -22,6 +22,13 @@ namespace Environment
 
         public UnityEvent dayPassedEvent = new UnityEvent(); // Invoke() at end of day
 
+        void Start()
+        {
+            dayProgressSeconds = 0f;   // prevent instant day-pass
+            UpdateVisuals();           // force sunrise
+        }
+
+
         public void AdvanceDay()
         {
             Debug.Assert(sunLight, "DayController requires a 'Sun'");
@@ -59,6 +66,11 @@ namespace Environment
 
         void Update()
         {
+
+
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Scene1-FarmingSim")
+                return;
+
             dayProgressSeconds += Time.deltaTime;
 
             if (dayProgressSeconds >= dayLengthSeconds)
@@ -67,6 +79,14 @@ namespace Environment
             }
 
             UpdateVisuals();
+
+
         }
+
+        void OnEnable()
+        {
+            dayProgressSeconds = 0f;
+        }
+
     }
 }

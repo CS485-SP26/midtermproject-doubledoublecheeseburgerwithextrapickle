@@ -1,85 +1,97 @@
 using System.Collections;
 using UnityEngine;
-using static Farming.FarmTile;
 
 namespace Farming
 {
     public class GrowTime : MonoBehaviour
     {
         [Header("Growth Stage Objects")]
-        [Tooltip("Visible at 0s (right after planting).")]
-        [SerializeField] private GameObject plantedStage;      // 0 sec
-
-        [Tooltip("Visible at 15s.")]
-        [SerializeField] private GameObject mediumStage;       // 15 sec
-
-        [Tooltip("Visible at 30s (fully grown).")]
-        [SerializeField] private GameObject fullyGrownStage;   // 30 sec
-
+        [SerializeField] private GameObject plantedStage;
+        [SerializeField] private GameObject mediumStage;
+        [SerializeField] private GameObject fullyGrownStage;
         [SerializeField] private GameObject witheredStage;
 
         [Header("Timing")]
         [SerializeField] private float mediumTime = 15f;
         [SerializeField] private float fullTime = 30f;
+        [SerializeField] private float witherTime = 20f;
 
         private Coroutine growthCoroutine;
 
         public bool IsGrown { get; private set; } = false;
         public bool IsGrowing { get; private set; } = false;
+        public bool IsMedium { get; private set; } = false;
 
         private void Awake()
         {
             if (plantedStage == null)
-            {
-                Transform t = FindDeepChild(transform, "SM_Tomato_Lv1");
-                if (t != null) plantedStage = t.gameObject;
-            }
+                plantedStage = FindDeepChild(transform, "SM_Tomato_Lv1")?.gameObject;
+
             if (mediumStage == null)
-            {
-                Transform t = FindDeepChild(transform, "SM_Tomato_Lv2");
-                if (t != null) mediumStage = t.gameObject;
-            }
+                mediumStage = FindDeepChild(transform, "SM_Tomato_Lv2")?.gameObject;
+
             if (fullyGrownStage == null)
-            {
-                Transform t = FindDeepChild(transform, "SM_Tomato_Lv3");
-                if (t != null) fullyGrownStage = t.gameObject;
-            }
+                fullyGrownStage = FindDeepChild(transform, "SM_Tomato_Lv3")?.gameObject;
 
-            // NEW: Withered stage
             if (witheredStage == null)
-            {
-                Transform t = FindDeepChild(transform, "SM_Tomato_Lv4");
-                if (t != null) witheredStage = t.gameObject;
-            }
+                witheredStage = FindDeepChild(transform, "SM_Tomato_Lv4")?.gameObject;
 
-            SetStage(0, false);
-            SetStage(1, false);
-            SetStage(2, false);
-
-            // NEW: ensure withered is off at startup
-            if (witheredStage != null) witheredStage.SetActive(false);
+            SetAllOff();
         }
+
+        private void SetAllOff()
+        {
+            if (plantedStage) plantedStage.SetActive(false);
+            if (mediumStage) mediumStage.SetActive(false);
+            if (fullyGrownStage) fullyGrownStage.SetActive(false);
+            if (witheredStage) witheredStage.SetActive(false);
+        }
+
         public void StartGrowth()
         {
-
-            if (!gameObject.activeInHierarchy)
-            {
-                gameObject.SetActive(true);
-            }
-
             StopGrowth();
-
-            if (witheredStage != null) witheredStage.SetActive(false);
+            SetAllOff();
 
             IsGrown = false;
             IsGrowing = true;
+            IsMedium = false;
 
-            // 0 sec: planted stage
-            SetStage(0, true);
-            SetStage(1, false);
-            SetStage(2, false);
+            plantedStage.SetActive(true);
 
             growthCoroutine = StartCoroutine(GrowRoutine());
+        }
+
+        private IEnumerator GrowRoutine()
+        {
+            // Planted → Medium
+            yield return new WaitForSeconds(mediumTime);
+
+            SetAllOff();
+            mediumStage.SetActive(true);
+            IsMedium = true;
+
+            // Medium → Full
+            float remaining = Mathf.Max(0f, fullTime - mediumTime);
+            yield return new WaitForSeconds(remaining);
+
+            SetAllOff();
+            fullyGrownStage.SetActive(true);
+
+            IsGrown = true;
+            IsGrowing = false;
+            IsMedium = false;
+
+            growthCoroutine = null;
+
+            StartCoroutine(WitherRoutine());
+        }
+
+        private IEnumerator WitherRoutine()
+        {
+            yield return new WaitForSeconds(witherTime);
+
+            if (IsGrown)
+                SetWithered();
         }
 
         public void SetWithered()
@@ -88,18 +100,27 @@ namespace Farming
 
             IsGrown = false;
             IsGrowing = false;
+            IsMedium = false;
 
-            // turn off normal stages
             SetStage(0, false);
             SetStage(1, false);
             SetStage(2, false);
 
-            // turn on withered stage
             if (witheredStage != null)
                 witheredStage.SetActive(true);
-            else
-                Debug.LogWarning("[GrowTime] No witheredStage found. Make sure it's named SM_Tomato_Lv4.");
+
+            // IMPORTANT: tell the tile it is withered
+            GetComponentInParent<FarmTile>().ForceSetWithered();
         }
+
+        private void SetStage(int stageIndex, bool active)
+        {
+            if (stageIndex == 0 && plantedStage != null) plantedStage.SetActive(active);
+            if (stageIndex == 1 && mediumStage != null) mediumStage.SetActive(active);
+            if (stageIndex == 2 && fullyGrownStage != null) fullyGrownStage.SetActive(active);
+        }
+
+
 
         public void StopGrowth()
         {
@@ -111,41 +132,64 @@ namespace Farming
             IsGrowing = false;
         }
 
-        private IEnumerator GrowRoutine()
+        public void RemovePlant()
         {
-            // 0 -> 15 sec
-            yield return new WaitForSeconds(mediumTime);
+            Destroy(gameObject);
+        }
 
-            // 15 sec: medium stage
-            SetStage(0, false);
-            SetStage(1, true);
-            SetStage(2, false);
+        public void LoadState(int stage)
+        {
+            StopGrowth();
+            SetAllOff();
 
-            // 15 -> 30 sec (remaining)
-            float remaining = Mathf.Max(0f, fullTime - mediumTime);
+            switch (stage)
+            {
+                case 0: // planted
+                    plantedStage.SetActive(true);
+                    IsGrown = false;
+                    IsGrowing = true;
+                    IsMedium = false;
+                    growthCoroutine = StartCoroutine(GrowRoutine());
+                    break;
+
+                case 1: // medium
+                    mediumStage.SetActive(true);
+                    IsGrown = false;
+                    IsGrowing = true;
+                    IsMedium = true;
+
+                    float remaining = Mathf.Max(0f, fullTime - mediumTime);
+                    growthCoroutine = StartCoroutine(FinishFromMedium(remaining));
+                    break;
+
+                case 2: // fully grown
+                    fullyGrownStage.SetActive(true);
+                    IsGrown = true;
+                    IsGrowing = false;
+                    IsMedium = false;
+                    StartCoroutine(WitherRoutine());
+                    break;
+
+                case 3: // withered
+                    SetWithered();
+                    break;
+            }
+        }
+
+        private IEnumerator FinishFromMedium(float remaining)
+        {
             yield return new WaitForSeconds(remaining);
 
-            // 30 sec: fully grown
-            SetStage(0, false);
-            SetStage(1, false);
-            SetStage(2, true);
+            SetAllOff();
+            fullyGrownStage.SetActive(true);
 
             IsGrown = true;
             IsGrowing = false;
-            growthCoroutine = null;
+            IsMedium = false;
+
+            StartCoroutine(WitherRoutine());
         }
 
-        private void SetStage(int stageIndex, bool active)
-        {
-            // Assume the objects are already implement but leave comments on making them visible.
-            // TODO: Make the correct stage visible by enabling it with SetActive(true).
-
-            if (stageIndex == 0 && plantedStage != null) plantedStage.SetActive(active);
-            if (stageIndex == 1 && mediumStage != null) mediumStage.SetActive(active);
-            if (stageIndex == 2 && fullyGrownStage != null) fullyGrownStage.SetActive(active);
-        }
-
-        // ✅ Helper: find a child by name anywhere under this object (including inactive)
         private Transform FindDeepChild(Transform parent, string name)
         {
             foreach (Transform child in parent)
@@ -159,18 +203,5 @@ namespace Farming
             }
             return null;
         }
-
-        public void RemovePlant()
-        {
-            if (this != null)
-            {
-                Debug.Log("[GrowTime] Removing plant and destroying GrowTime component.");
-                Destroy(gameObject);
-               
-            }
-
-        }
     }
-
-
 }

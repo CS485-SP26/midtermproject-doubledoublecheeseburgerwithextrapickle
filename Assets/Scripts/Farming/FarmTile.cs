@@ -1,7 +1,8 @@
-// FarmTile.cs
+﻿// FarmTile.cs
+using Core;
+using Environment;
 using System.Collections.Generic;
 using UnityEngine;
-using Environment;
 
 namespace Farming
 {
@@ -92,19 +93,40 @@ namespace Farming
 
         public void Harvest()
         {
-            if(tileCondition != Condition.Grown && tileCondition != Condition.Withered)
+            if (tileCondition != Condition.Grown && tileCondition != Condition.Withered)
             {
-                Debug.Log("[FarmTile] Tried to harvest but tile is not fully grown.");
+                Debug.Log("[FarmTile] Tried to harvest but tile is not ready.");
                 return;
             }
-            tileCondition = FarmTile.Condition.Tilled;
-            Debug.Log("[FarmTile] Harvested plant, resetting to tilled state.");
-            growTime.RemovePlant();
-            UpdateVisual();
-            tillAudio?.Play();
+
+            // WITHERED → no tomato
+            if (tileCondition == Condition.Withered)
+            {
+                Debug.Log("[FarmTile] Harvested WITHERED plant. No tomato given.");
+                growTime.RemovePlant();
+                growTime = null;
+                tileCondition = Condition.Tilled;
+                UpdateVisual();
+                tillAudio?.Play();
+                return;
+            }
+
+            // GROWN → give tomato
+            if (tileCondition == Condition.Grown)
+            {
+                Debug.Log("[FarmTile] Harvested grown plant. Tomato given.");
+                GameManager.Instance.AddTomato(1);
+
+                growTime.RemovePlant();
+                growTime = null;
+                tileCondition = Condition.Tilled;
+                UpdateVisual();
+                tillAudio?.Play();
+                return;
+            }
         }
 
-        
+
         public bool PlantSeed()
         {
             if (tileCondition != Condition.Watered)
@@ -263,5 +285,64 @@ namespace Farming
             }
             UpdateVisual();
         }
+
+        public int GetDaysSinceLastInteraction() => daysSinceLastInteraction;
+
+        public bool HasGrowTime()
+        {
+            return growTime != null;
+        }
+
+        
+
+        public bool IsPlantGrown()
+        {
+            return growTime != null && growTime.IsGrown;
+        }
+
+        public bool IsPlantWithered()
+        {
+            return growTime != null && !growTime.IsGrowing && !growTime.IsGrown;
+        }
+
+ 
+
+        public void ForceSetCondition(Condition c)
+        {
+            tileCondition = c;
+        }
+
+        public void SetDaysSinceLastInteraction(int value)
+        {
+            daysSinceLastInteraction = value;
+        }
+
+        public GrowTime GetGrowTime()
+        {
+            return growTime;
+        }
+
+        public void ForceEnsureGrowTime()
+        {
+            EnsureGrowTimeInstance();
+        }
+
+        public void ForceUpdateVisual()
+        {
+            UpdateVisual();
+        }
+
+        public bool IsPlantMedium()
+        {
+            return growTime != null && growTime.IsMedium;
+        }
+
+        public void ForceSetWithered()
+        {
+            tileCondition = Condition.Withered;
+            UpdateVisual();
+        }
+
+
     }
 }
