@@ -15,6 +15,7 @@ MonoBehaviour:
   temperature: 75
   seasonName: Spring
   dayLength: 13
-  skyColor: {r: 0.50377357, g: 0.8917098, b: 1, a: 0}
+  skyColor: {r: 0.6698113, g: 0.9762738, b: 1, a: 0}
   seasonLengthInDays: 28
-  witherRate: 0
+  witherRate: 1
+  seasonsEnum: 0

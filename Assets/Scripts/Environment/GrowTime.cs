@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -14,9 +15,11 @@ namespace Farming
         [Header("Timing")]
         [SerializeField] private float mediumTime = 15f;
         [SerializeField] private float fullTime = 30f;
-        [SerializeField] private float witherTime = 20f;
+        [SerializeField] private float witherTime = 30f;
 
         private Coroutine growthCoroutine;
+
+        SeasonManager seasonManager;
 
         public bool IsGrown { get; private set; } = false;
         public bool IsGrowing { get; private set; } = false;
@@ -37,7 +40,18 @@ namespace Farming
                 witheredStage = FindDeepChild(transform, "SM_Tomato_Lv4")?.gameObject;
 
             SetAllOff();
+
+            seasonManager = FindAnyObjectByType<SeasonManager>();
+            seasonManager.OnSeasonChanged.AddListener(HandleSeasonChange);
+            HandleSeasonChange();
         }
+
+        private void OnDestroy()
+        {
+            if (seasonManager != null)
+                seasonManager.OnSeasonChanged.RemoveListener(HandleSeasonChange);
+        }
+
 
         private void SetAllOff()
         {
@@ -203,5 +217,19 @@ namespace Farming
             }
             return null;
         }
+
+        private void HandleSeasonChange()
+        {
+            
+            var data = seasonManager.GetCurrentSeason();
+            UpdateWitherTime(data.witherRate);
+        }
+        public void UpdateWitherTime(float witherRate)
+        {
+            Debug.Log("Wither rate updated to * " + seasonManager.GetCurrentSeason().witherRate);
+            witherTime *= witherRate;
+        }
+
+
     }
 }

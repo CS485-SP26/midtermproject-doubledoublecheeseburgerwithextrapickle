@@ -1941,6 +1941,7 @@ GameObject:
   - component: {fileID: 280697861}
   - component: {fileID: 280697860}
   - component: {fileID: 280697862}
+  - component: {fileID: 280697863}
   m_Layer: 0
   m_Name: SeasonController
   m_TagString: Untagged
@@ -1961,6 +1962,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentSeason: {fileID: 0}
+  OnSeasonChanged:
+    m_PersistentCalls:
+      m_Calls: []
   Winter: {fileID: 11400000, guid: acdeaaabfe381b74685f7b6944dd0aee, type: 2}
   Spring: {fileID: 11400000, guid: cd03084812e601140aab2b10c6391c02, type: 2}
   Summer: {fileID: 11400000, guid: 20a4b165c3c45c14cb7c407ac84e95ff, type: 2}
@@ -1995,17 +1999,22 @@ MonoBehaviour:
   currentDay: 0
   currentWeek: 0
   dayOfSeason: 0
-  OnDayChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  OnWeekChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  AdvanceSeason:
-    m_PersistentCalls:
-      m_Calls: []
   seasonManager: {fileID: 280697860}
   dayController: {fileID: 1248295910}
+--- !u!114 &280697863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280697859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 182573f80d9cbc947b2c13f97733a2b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seasonManager: {fileID: 280697860}
+  sunlight: {fileID: 410087040}
 --- !u!1 &300727963
 GameObject:
   m_ObjectHideFlags: 0

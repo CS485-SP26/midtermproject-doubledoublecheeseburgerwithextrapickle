@@ -15,7 +15,7 @@ MonoBehaviour:
   temperature: 45
   seasonName: Winter
   dayLength: 8
-  skyColor: {r: 0.7528302, g: 1, b: 0.97665036, a: 0}
+  skyColor: {r: 0.41320753, g: 0.875738, b: 1, a: 0}
   seasonLengthInDays: 28
-  witherRate: 0
+  witherRate: 0.2
   seasonsEnum: 3

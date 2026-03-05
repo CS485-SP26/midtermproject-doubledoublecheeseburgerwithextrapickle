@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\UI\HUDUpdater.cs" />
     <Compile Include="Assets\Scripts\SellHandler.cs" />
     <Compile Include="Assets\Scripts\Farming\FarmTileManager.cs" />
+    <Compile Include="Assets\Scripts\Environment\WeatherController.cs" />
     <Compile Include="Assets\Scripts\Character\PhysicsController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Environment\SeasonManager.cs" />

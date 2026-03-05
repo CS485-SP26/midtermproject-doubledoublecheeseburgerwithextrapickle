@@ -1,9 +1,13 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SeasonManager : MonoBehaviour
 {
 
     [SerializeField] private SeasonData currentSeason;
+
+    public UnityEvent OnSeasonChanged = new UnityEvent();
+
 
     private SeasonData ScratchData;
 
@@ -34,7 +38,8 @@ public class SeasonManager : MonoBehaviour
 
     private void Start()
     {
-        SetSeason(Seasons.Spring);
+        SetSeason(Seasons.Winter);
+        AdvanceSeason();
     }
 
     public void SetSeason(Seasons season)
@@ -47,6 +52,7 @@ public class SeasonManager : MonoBehaviour
             case Seasons.Fall: RuntimeData = Fall; break;
         }
         currentSeason = RuntimeData;
+        OnSeasonChanged?.Invoke();
     }
 
     public void AdvanceSeason()
