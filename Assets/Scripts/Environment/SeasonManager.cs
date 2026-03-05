@@ -38,8 +38,8 @@ public class SeasonManager : MonoBehaviour
 
     private void Start()
     {
-        SetSeason(Seasons.Winter);
-        AdvanceSeason();
+        SetSeason(Seasons.Spring);
+
     }
 
     public void SetSeason(Seasons season)
