@@ -5160,6 +5160,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player(WithInventory)
       objectReference: {fileID: 0}
+    - target: {fileID: 5715682268634523600, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
+      propertyPath: cameraTransform
+      value: 
+      objectReference: {fileID: 1870195487}
     - target: {fileID: 9157003787702061077, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
       propertyPath: WinText
       value: 
@@ -5192,6 +5196,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bc9f418a283ac5468231082155cf083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &1259984725 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2505527034665219353, guid: b8c48d20231436740a5aae88296f0fc7, type: 3}
+  m_PrefabInstance: {fileID: 1259984723}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1289383297
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8746,6 +8755,7 @@ GameObject:
   - component: {fileID: 1870195486}
   - component: {fileID: 1870195485}
   - component: {fileID: 1870195488}
+  - component: {fileID: 1870195489}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -8871,6 +8881,22 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1870195489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870195484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b63f88bb9da30945b99b81ec8216dc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1259984725}
+  offset: {x: 0, y: 3, z: -5}
+  followSpeed: 5
+  rotationSpeed: 5
 --- !u!1001 &1873044632
 PrefabInstance:
   m_ObjectHideFlags: 0
