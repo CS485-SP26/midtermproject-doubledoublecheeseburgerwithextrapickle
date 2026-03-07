@@ -36,7 +36,8 @@ public class SeasonUIController : MonoBehaviour
 
         string seasonName = seasonManager.GetCurrentSeason().seasonName;
         string dayName = calendarController.GetDayOfWeek().ToString();
+        int dayNumber = calendarController.getDayOfSeason();
 
-        seasonText.SetText(seasonName + " - " + dayName);
+        seasonText.SetText(seasonName + " - " + dayName + " Day: " + dayNumber);
     }
 }
