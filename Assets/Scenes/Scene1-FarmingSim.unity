@@ -4189,17 +4189,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 510740345}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &555931015 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6335409688379498337, guid: 565d12cb280c5a44bb7edea698bbb492, type: 3}
-  m_PrefabInstance: {fileID: 8627432002308494859}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &557615869
 GameObject:
   m_ObjectHideFlags: 0
@@ -9855,8 +9844,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DayNightControl
   sunLight: {fileID: 410087040}
-  dayLabel: {fileID: 555931015}
-  dayLengthSeconds: 1
+  dayLabel: {fileID: 0}
+  dayLengthSeconds: 60
   dayProgressSeconds: 0
   currentDay: 1
   dayPassedEvent:

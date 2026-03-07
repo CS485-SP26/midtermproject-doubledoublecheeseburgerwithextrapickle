@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 namespace Core
 {
@@ -17,11 +18,13 @@ namespace Core
         float energyLevel = 100f;
 
         public bool hasAwardedCompletion = false;
+        public bool soldTomatoesCelebration = false;
 
         public List<Item> Inventory = new List<Item>();
         public int selectedSlotIndex = 0;
 
         public event Action OnInventoryChanged;
+        public UnityEvent OnParticleEffectTriggered = new UnityEvent();
 
         public FarmGridData SavedFarmData;
 
@@ -118,6 +121,14 @@ namespace Core
         public void setWinCondition()
         {
             hasAwardedCompletion = true;
+        }
+        public void setSoldTomatoesCelebration()
+        {
+            if(soldTomatoesCelebration == false)
+            {
+                soldTomatoesCelebration = true;
+                OnParticleEffectTriggered?.Invoke();
+            }
         }
     }
 }

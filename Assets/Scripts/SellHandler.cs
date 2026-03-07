@@ -37,6 +37,8 @@ public class SellHandler : MonoBehaviour
         {
             Debug.Log("No tomatoes harvested to sell. :("); return;
         }
+  
+        GameManager.Instance.setSoldTomatoesCelebration();
         GameManager.Instance.SubtractTomato(1);
         GameManager.Instance.AddFunds(plantSellPrice); 
     
