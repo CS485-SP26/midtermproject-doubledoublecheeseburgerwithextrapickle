@@ -18,6 +18,7 @@ public class CalendarController : MonoBehaviour
 
     private void Start()
     {
+        currentDay = DayOfWeek.monday;
         dayController.dayPassedEvent.AddListener(AdvanceDay);
         currentWeek = 1;
         dayOfSeason = 1;
@@ -27,11 +28,11 @@ public class CalendarController : MonoBehaviour
     {
         currentDay = (DayOfWeek)(((int)currentDay + 1) % 7);
         dayOfSeason++;
-        if(currentDay == DayOfWeek.monday)
+        if (currentDay == DayOfWeek.monday)
         {
             currentWeek = (currentWeek + 1) % 4;
         }
-        if(dayOfSeason > seasonManager.GetCurrentSeason().seasonLengthInDays)
+        if (dayOfSeason > seasonManager.GetCurrentSeason().seasonLengthInDays)
         {
             dayOfSeason = 1;
             seasonManager.AdvanceSeason();
@@ -43,7 +44,7 @@ public class CalendarController : MonoBehaviour
         currentDay = dayOfWeek;
     }
 
-    public DayOfWeek GetDayOfWeek(DayOfWeek dayOfWeek)
+    public DayOfWeek GetDayOfWeek()
     {
         return currentDay;
     }
